@@ -4,83 +4,174 @@
     "href": "index.html",
     "title": "What Makes a Car Worth Its Price?",
     "section": "",
-    "text": "Code\nlibrary(tidyverse)\nlibrary(plotly)\nlibrary(scales)\n\nmsrp_df &lt;- read_csv(\"data/processed/msrp_merged.csv\", show_col_types = FALSE)\nrecent_df &lt;- read_csv(\"data/processed/recent_vehicles_2022_2027.csv\", show_col_types = FALSE)\ntrends_df &lt;- read_csv(\"data/processed/epa_trends_clean.csv\", show_col_types = FALSE)\n\nn_msrp &lt;- nrow(msrp_df)\nn_recent &lt;- nrow(recent_df)\nn_years_epa &lt;- n_distinct(trends_df$year)"
-  },
-  {
-    "objectID": "index.html#research-question",
-    "href": "index.html#research-question",
-    "title": "What Makes a Car Worth Its Price?",
-    "section": "Research Question",
-    "text": "Research Question\nHow do vehicle price, horsepower, fuel economy, and manufacturer relate to one another in recent vehicles?\nCombining manufacturer suggested retail prices (MSRP), Trimslate vehicle specifications (through model year 2027), and U.S. EPA certification and historical trend records (1975–2025), this website investigates what buyers gain in performance and efficiency as vehicle prices climb."
+    "text": "Figure 1\n\n\n\n\n\nThis chart compares engine horsepower with vehicle MSRP across body styles. Higher-horsepower vehicles generally cost more, while the log scale makes everyday cars easier to compare with high-performance vehicles."
   },
   {
     "objectID": "index.html#horsepower-vs.-msrp-by-vehicle-body-style",
     "href": "index.html#horsepower-vs.-msrp-by-vehicle-body-style",
     "title": "What Makes a Car Worth Its Price?",
-    "section": "Horsepower vs. MSRP by Vehicle Body Style",
-    "text": "Horsepower vs. MSRP by Vehicle Body Style\nAcross 9,762 actual vehicle observations, horsepower is one of the strongest predictors of sticker price (\\(r = 0.88\\) with \\(\\log_{10}(\\text{MSRP})\\)). We plot MSRP on a logarithmic dollar scale so mainstream $15,000–$60,000 sedans, SUVs, and pickups remain easy to compare alongside six- and seven-figure exotic coupes and convertibles.\nTip: Hover over any point to inspect its exact year, make, model, horsepower, MSRP, and MPG, or click body styles in the legend to isolate groups.\n\n\n\nCode\n# Prepare hover text for interactive exploration\nplot_df &lt;- msrp_df |&gt;\n  mutate(\n    hover_label = paste0(\n      \"&lt;b&gt;\", year, \" \", make, \" \", model, \"&lt;/b&gt;&lt;br&gt;\",\n      \"Body Style: \", body_style, \" (\", body_group, \")&lt;br&gt;\",\n      \"Horsepower: \", comma(horsepower), \" hp&lt;br&gt;\",\n      \"MSRP: \", dollar(msrp), \"&lt;br&gt;\",\n      \"Fuel Economy: \", mpg_city, \" city / \", mpg_highway, \" hwy MPG\"\n    )\n  )\n\np_home &lt;- ggplot(\n  plot_df,\n  aes(\n    x = horsepower,\n    y = msrp,\n    color = body_group,\n    text = hover_label\n  )\n) +\n  geom_point(alpha = 0.55, size = 1.7) +\n  scale_y_log10(\n    labels = label_dollar(),\n    breaks = c(10000, 25000, 50000, 100000, 250000, 500000, 1500000)\n  ) +\n  scale_x_continuous(labels = label_comma()) +\n  scale_color_brewer(palette = \"Dark2\") +\n  labs(\n    title = paste0(\"Vehicle Sticker Price Rises Steeply With Horsepower (N = \", comma(n_msrp), \" Vehicles)\"),\n    x = \"Engine Horsepower (HP)\",\n    y = \"Manufacturer Suggested Retail Price (MSRP, log scale)\",\n    color = \"Body Style\"\n  ) +\n  theme_minimal(base_size = 13)\n\nggplotly(p_home, tooltip = \"text\") |&gt;\n  layout(\n    legend = list(orientation = \"h\", y = -0.18),\n    margin = list(b = 90)\n  )\n\n\n\n\n\n\n\n\nFigure 1\n\n\n\n\n\n\nKey Takeaways & Data Filtering Notes\n\nExponential price scaling: Doubling horsepower from 150 HP to 300 HP moves typical vehicles from economy hatchbacks and compact sedans (~$18,000–$24,000) into mid-tier SUVs, pickups, and sport sedans (~$35,000–$50,000), while Coupes and Convertibles above 500 HP surge past $100,000.\nTransparent filtering (11,914 \\(\\rightarrow\\) 9,762 rows): Starting from the 11,914 raw rows in cars_msrp_kaggle.csv, we removed 715 exact duplicate rows, excluded 1,368 pre-2001 observations (which recorded $2,000 used trade-in estimates rather than original new-car MSRPs), and dropped 69 rows missing engine horsepower—leaving 9,762 verified new-vehicle observations.\nConnecting recent vehicles (2022–2027): Because Trimslate’s public CSV export omits MSRP values, all price graphics use verified msrp_merged.csv observations while our Car Explorer, Fuel Economy, and Automotive Trends tabs focus on 7,397 recent 2022–2027 vehicles and 1975–2025 EPA records."
+    "section": "",
+    "text": "Figure 1\n\n\n\n\n\nThis chart compares engine horsepower with vehicle MSRP across body styles. Higher-horsepower vehicles generally cost more, while the log scale makes everyday cars easier to compare with high-performance vehicles."
   },
   {
     "objectID": "index.html#explore-the-full-website",
     "href": "index.html#explore-the-full-website",
     "title": "What Makes a Car Worth Its Price?",
     "section": "Explore the Full Website",
-    "text": "Explore the Full Website\n\n\nCar Explorer\nSearch and filter 2022–2027 vehicles by make, model, and body style with specifications and CarAPI photographs.\n\n\nPrice & Performance\nCompare manufacturer pricing tiers, horsepower-per-dollar value, and recent 2022–2027 horsepower benchmarks.\n\n\nFuel Economy\nCompare 2022–2027 city MPG, highway MPG, and electric vehicle driving range across powertrains.\n\n\nAutomotive Trends\nExplore 50 years of EPA trends (1975–2025) in MPG, horsepower, weight, and MY 2024 manufacturer fleets."
+    "text": "Explore the Full Website\n\n\n\n     \n\n\nCar Explorer\nSearch and filter 2022–2027 vehicles by make, model, and body style with specifications and CarAPI photographs.\n\n\n\n\n     \n\n\nPrice & Performance\nCompare manufacturer pricing tiers, horsepower-per-dollar value, and recent 2022–2027 horsepower benchmarks.\n\n\n\n\n     \n\n\nFuel Economy\nCompare 2022–2027 city MPG, highway MPG, and electric vehicle driving range across powertrains.\n\n\n\n\n      \n\n\nAutomotive Trends\nExplore 50 years of EPA trends (1975–2025) in MPG, horsepower, weight, and MY 2024 manufacturer fleets.\n\n\n\n\n\n9,762 Vehicles\nDeduplicated new-vehicle MSRP & horsepower records (msrp_merged.csv, MY 2001–2017).\n\n\n51 Model Years\nHistorical EPA fleet trends (1975–2025) tracking MPG, horsepower, and vehicle weight."
   },
   {
     "objectID": "performance.html",
     "href": "performance.html",
     "title": "Price & Performance",
     "section": "",
-    "text": "Code\nlibrary(tidyverse)\nlibrary(plotly)\n\n\nThis page will analyze relationships among horsepower, torque, manufacturer positioning, and MSRP using cleaned vehicle specification data."
+    "text": "Does paying more for a car always buy you a stronger engine, or are buyers mostly paying for body style and badge prestige? Across nearly ten thousand vehicles, we look at how horsepower and sticker price move together—focusing on engine horsepower since public specification sources leave torque unrecorded."
+  },
+  {
+    "objectID": "performance.html#horsepower-vs.-price-by-body-style",
+    "href": "performance.html#horsepower-vs.-price-by-body-style",
+    "title": "Price & Performance",
+    "section": "Horsepower vs. Price by Body Style",
+    "text": "Horsepower vs. Price by Body Style\n\n\n\n\n\n\n\n\n\nFigure 1\n\n\n\n\n\nMore horsepower pushes prices upward in every category, but two-door sporty cars climb much faster than everyday family or work vehicles. Coupes and convertibles shoot steeply into luxury territory as power rises, while pickups and minivans pack strong towing engines without the steep luxury markup. Economy hatchbacks stay clustered in the most affordable, lower-powered corner of the market. (Ultra-rare hypercars above $250k are set aside here so everyday price trends stay easy to read.)"
+  },
+  {
+    "objectID": "performance.html#best-horsepower-value-by-brand",
+    "href": "performance.html#best-horsepower-value-by-brand",
+    "title": "Price & Performance",
+    "section": "Best Horsepower Value by Brand",
+    "text": "Best Horsepower Value by Brand\n\n\n\n\n\n\n\n\n\nFigure 2\n\n\n\n\n\nMainstream automakers deliver far more raw muscle per dollar than luxury or exotic badges. Everyday brands like Dodge, Kia, Chevrolet, Hyundai, and Ford sit right at the top because they offer strong engines at approachable prices, whereas European luxury and supercar makers sit near the bottom—showing that high-end buyers pay heavily for interior craftsmanship, handling, and prestige rather than cheap horsepower."
+  },
+  {
+    "objectID": "performance.html#average-price-by-body-style",
+    "href": "performance.html#average-price-by-body-style",
+    "title": "Price & Performance",
+    "section": "Average Price by Body Style",
+    "text": "Average Price by Body Style\n\n\n\n\n\n\n\n\n\nFigure 3\n\n\n\n\n\nConvertibles and coupes cost roughly twice as much on average as any other body style, largely because almost all exotic sports cars and grand tourers are built with two doors. Practical styles—including sedans, SUVs, pickups, wagons, minivans, and hatchbacks—stay much closer to mainstream family budgets, with hatchbacks serving as the most affordable entry point."
+  },
+  {
+    "objectID": "performance.html#a-note-on-historical-prices-vs.-newer-cars",
+    "href": "performance.html#a-note-on-historical-prices-vs.-newer-cars",
+    "title": "Price & Performance",
+    "section": "A Note on Historical Prices vs. Newer Cars",
+    "text": "A Note on Historical Prices vs. Newer Cars\nBecause public specification tables for recent 2022–2027 models do not publish sticker prices, the price charts on this page draw from verified 2001–2017 vehicle MSRPs while our other tabs explore newer 2022–2027 models directly. Since 2017, new-car prices and turbo/electric horsepower have both climbed noticeably, so these charts best capture how brands and body styles position themselves relative to one another rather than today’s exact showroom sticker tags."
   },
   {
     "objectID": "about.html",
     "href": "about.html",
     "title": "About This Project",
     "section": "",
-    "text": "What Makes a Car Worth Its Price? is a data science final project built with R, the tidyverse, Quarto, and GitHub Pages."
+    "text": "What Makes a Car Worth Its Price? investigates how vehicle sticker price (MSRP), engine horsepower, fuel economy, electric driving range, and manufacturer positioning relate to one another—combining verified MSRP benchmarks with recent 2022–2027 vehicle specifications and 50 years (1975–2025) of U.S. EPA fleet trends.\n\n\n\n\nTable 1\n\n\n\n\n\n\n\n\n\n\n\n\nDataset\nModel Years\nObservations\nPrimary Website Pages\n\n\n\n\nEPA Automotive Trends (MY 2024 Detailed + 1975–2025 Summary)\n1975–2025 & 2024\n2,386 (1,978 + 408)\nAutomotive Trends, Car Explorer\n\n\nOriginal Cars MSRP Dataset (Raw Cleaned / Deduplicated MY 2001–2017)\n1990–2017 (2001–2017 MSRP)\n11,914 raw / 9,762 usable\nHome, Price & Performance\n\n\nTrimslate Vehicle Specifications (Full / Recent MY 2022–2027)\n1984–2027 (2022–2027 Focus)\n52,130 total / 7,397 recent\nCar Explorer, Fuel Economy, Price & Performance"
   },
   {
-    "objectID": "about.html#project-overview",
-    "href": "about.html#project-overview",
+    "objectID": "about.html#project-summary",
+    "href": "about.html#project-summary",
     "title": "About This Project",
     "section": "",
-    "text": "What Makes a Car Worth Its Price? is a data science final project built with R, the tidyverse, Quarto, and GitHub Pages."
+    "text": "What Makes a Car Worth Its Price? investigates how vehicle sticker price (MSRP), engine horsepower, fuel economy, electric driving range, and manufacturer positioning relate to one another—combining verified MSRP benchmarks with recent 2022–2027 vehicle specifications and 50 years (1975–2025) of U.S. EPA fleet trends.\n\n\n\n\nTable 1\n\n\n\n\n\n\n\n\n\n\n\n\nDataset\nModel Years\nObservations\nPrimary Website Pages\n\n\n\n\nEPA Automotive Trends (MY 2024 Detailed + 1975–2025 Summary)\n1975–2025 & 2024\n2,386 (1,978 + 408)\nAutomotive Trends, Car Explorer\n\n\nOriginal Cars MSRP Dataset (Raw Cleaned / Deduplicated MY 2001–2017)\n1990–2017 (2001–2017 MSRP)\n11,914 raw / 9,762 usable\nHome, Price & Performance\n\n\nTrimslate Vehicle Specifications (Full / Recent MY 2022–2027)\n1984–2027 (2022–2027 Focus)\n52,130 total / 7,397 recent\nCar Explorer, Fuel Economy, Price & Performance"
   },
   {
-    "objectID": "about.html#author-repository",
-    "href": "about.html#author-repository",
+    "objectID": "about.html#author-course-information",
+    "href": "about.html#author-course-information",
     "title": "About This Project",
-    "section": "Author & Repository",
-    "text": "Author & Repository\n\nGitHub Repository: https://github.com/mt-0708/Car-Explorer"
+    "section": "Author & Course Information",
+    "text": "Author & Course Information\n\nAuthor: Mayah Torres (@mt-0708)\nProject GitHub Repository: https://github.com/mt-0708/Car-Explorer\nCourse Background: Built as a data science final project following Preceptor’s Primer for Bayesian Data Science using R, the tidyverse, Quarto, and GitHub Pages."
   },
   {
     "objectID": "about.html#data-sources-citations",
     "href": "about.html#data-sources-citations",
     "title": "About This Project",
     "section": "Data Sources & Citations",
-    "text": "Data Sources & Citations\n\nU.S. Environmental Protection Agency (EPA) — Automotive Trends Data: https://www.epa.gov/automotive-trends/explore-automotive-trends-data\nOriginal Cars MSRP Dataset — GitHub Gist (dvinubius): https://gist.github.com/dvinubius/33486dad2dc86319f0a06ffdb1d4f34f\nTrimslate Vehicle Specifications — https://trimslate.com/data\nCarAPI Vehicle Photographs — https://carapi.trustcar.info/ (photographs matched with attribution and license metadata preserved)"
+    "text": "Data Sources & Citations\n\nU.S. Environmental Protection Agency (EPA) — 2025 EPA Automotive Trends Report: Explore Automotive Trends Data (1975–2025 Summary Trends and Model Year 2024 Fuel Economy and Technology Data). U.S. Government work (Public Domain). Available at: https://www.epa.gov/automotive-trends/explore-automotive-trends-data\nTrimslate — The Trimslate Vehicle Specifications Dataset (52,130 trims across model years 1984–2027, compiled from EPA FuelEconomy.gov, EPA Test Car List, and NHTSA records). Used under CC BY 4.0 attribution requirements—credit to Trimslate (https://trimslate.com/data).\nOriginal Cars MSRP Dataset — Curated vehicle MSRP and engine specifications dataset (cars_msrp_kaggle.csv, originally compiled from Edmunds and Kaggle / Cooper Union). Hosted via GitHub Gist (dvinubius): https://gist.github.com/dvinubius/33486dad2dc86319f0a06ffdb1d4f34f"
+  },
+  {
+    "objectID": "about.html#vehicle-photograph-attribution-licenses",
+    "href": "about.html#vehicle-photograph-attribution-licenses",
+    "title": "About This Project",
+    "section": "Vehicle Photograph Attribution & Licenses",
+    "text": "Vehicle Photograph Attribution & Licenses\nBecause carapi.trustcar.info was unreachable in DNS at build time, matched recent vehicle photographs on the Car Explorer page were retrieved via scripts/download_images.R from Wikimedia Commons (the same Creative Commons image repository used by Trimslate). Full photographer and license credits for all 15 local images are preserved below:\n\n\n\n\nTable 2\n\n\n\n\n\n\nVehicle\nLocal File\nPhotographer\nLicense\nSource\n\n\n\n\nToyota Camry\nimages/toyota_camry.jpg\nEthan Llamas\nCC BY-SA 4.0\nWikimedia Commons\n\n\nHonda Civic\nimages/honda_civic.jpg\nElise240SX\nCC BY-SA 4.0\nWikimedia Commons\n\n\nFord F150\nimages/ford_f150.jpg\nKevauto\nCC BY-SA 4.0\nWikimedia Commons\n\n\nChevrolet Corvette\nimages/chevrolet_corvette.jpg\nAlexander Migl\nCC BY-SA 4.0\nWikimedia Commons\n\n\nTesla Model 3\nimages/tesla_model_3.jpg\nAlexander-93\nCC BY-SA 4.0\nWikimedia Commons\n\n\nHyundai Ioniq 5\nimages/hyundai_ioniq_5.jpg\n© M 93\nCC BY-SA 3.0 de\nWikimedia Commons\n\n\nRivian R1S\nimages/rivian_r1s.jpg\nKevauto\nCC BY-SA 4.0\nWikimedia Commons\n\n\nLucid Air\nimages/lucid_air.jpg\nMr.choppers\nCC BY-SA 3.0\nWikimedia Commons\n\n\nPorsche 911\nimages/porsche_911.jpg\nAlexander Migl\nCC BY-SA 4.0\nWikimedia Commons\n\n\nSubaru Outback\nimages/subaru_outback.jpg\nMercurySable99\nCC BY-SA 4.0\nWikimedia Commons\n\n\nToyota Prius\nimages/toyota_prius.jpg\n© M 93\nCC BY-SA 3.0 de\nWikimedia Commons\n\n\nMazda MX-5\nimages/mazda_mx_5.jpg\nAlexander-93\nCC BY-SA 4.0\nWikimedia Commons\n\n\nJeep Wrangler\nimages/jeep_wrangler.jpg\nAlexander Migl\nCC BY-SA 4.0\nWikimedia Commons\n\n\nKia EV9\nimages/kia_ev9.jpg\nAlexander-93\nCC BY-SA 4.0\nWikimedia Commons\n\n\nAlfa Romeo Tonale\nimages/alfa_romeo_tonale.jpg\nMatthias v.d. Elbe\nCC BY 4.0\nWikimedia Commons"
   },
   {
     "objectID": "trends.html",
     "href": "trends.html",
     "title": "Automotive Trends",
     "section": "",
-    "text": "Code\nlibrary(tidyverse)\nlibrary(plotly)\n\n\nThis page will explore historical trends from the EPA Automotive Trends dataset across model years and manufacturers."
+    "text": "Today’s vehicles look almost nothing like the cars on American roads fifty years ago. Long-term U.S. Environmental Protection Agency records show how automakers responded to fuel crises, changing family tastes, and modern clean-energy rules—transforming heavy, thirsty sedans of the 1970s into today’s lineup of turbocharged crossovers, pickups, hybrids, and electric vehicles."
+  },
+  {
+    "objectID": "trends.html#doubling-efficiency-and-horsepower-over-time",
+    "href": "trends.html#doubling-efficiency-and-horsepower-over-time",
+    "title": "Automotive Trends",
+    "section": "Doubling Efficiency and Horsepower Over Time",
+    "text": "Doubling Efficiency and Horsepower Over Time\n\n\n\n\n\n\n\n\n\nFigure 1\n\n\n\n\n\nAmerican cars moved through three clear eras over the past half-century. In the late 1970s and early 1980s, automakers boosted gas mileage quickly by shrinking heavy cars and trimming engine output. For the next twenty years, fuel economy plateaued because new engine gains went straight into bigger SUVs and stronger engines instead. Only over the last two decades—thanks to turbocharging, modern transmissions, hybrids, and electric motors—have both fuel economy and horsepower climbed together to record highs."
+  },
+  {
+    "objectID": "trends.html#how-suvs-replaced-the-family-sedan",
+    "href": "trends.html#how-suvs-replaced-the-family-sedan",
+    "title": "Automotive Trends",
+    "section": "How SUVs Replaced the Family Sedan",
+    "text": "How SUVs Replaced the Family Sedan\n\n\n\n\n\n\n\n\n\nFigure 2\n\n\n\n\n\nIn the mid-1970s, sedans and station wagons dominated American driveways while SUVs were a tiny niche. Over the decades that followed, minivans briefly surged before crossovers and truck-based SUVs steadily took over the market—until SUVs now represent roughly three out of every five new vehicles built, leaving traditional sedans at an all-time low while pickup trucks hold a steady, loyal slice of the market."
+  },
+  {
+    "objectID": "trends.html#vehicle-weight-and-tailpipe-carbon-today",
+    "href": "trends.html#vehicle-weight-and-tailpipe-carbon-today",
+    "title": "Automotive Trends",
+    "section": "Vehicle Weight and Tailpipe Carbon Today",
+    "text": "Vehicle Weight and Tailpipe Carbon Today\n\n\n\n\n\n\n\n\n\nFigure 3\n\n\n\n\n\nAmong recent gasoline and diesel vehicles, extra weight carries a clear environmental cost: heavier trucks and large SUVs burn more fuel per mile and release far more tailpipe carbon than compact cars and hybrids. Battery-electric models break that weight penalty at the tailpipe—forming a flat zero-emission line across the bottom of the chart from compact hatchbacks all the way up to heavy electric pickups."
   },
   {
     "objectID": "fuel.html",
     "href": "fuel.html",
-    "title": "Fuel Economy",
+    "title": "Fuel Economy & EV Range",
     "section": "",
-    "text": "Code\nlibrary(tidyverse)\nlibrary(plotly)\n\n\nThis page will compare city MPG, highway MPG, and electric range across recent internal-combustion, hybrid, and battery-electric vehicles."
+    "text": "Today’s car shoppers choose between traditional fuel engines, hybrids, and pure battery-electric vehicles. Looking across recent 2022–2027 models, we compare how each powertrain handles city traffic versus open-highway cruising, which electric brands travel farthest on a single charge, and how much drivers actually spend on fuel or electricity each year."
+  },
+  {
+    "objectID": "fuel.html#city-traffic-vs.-highway-cruising",
+    "href": "fuel.html#city-traffic-vs.-highway-cruising",
+    "title": "Fuel Economy & EV Range",
+    "section": "City Traffic vs. Highway Cruising",
+    "text": "City Traffic vs. Highway Cruising\n\n\n\n\n\n\n\n\n\nFigure 1\n\n\n\n\n\nGasoline and diesel cars sit above the dashed diagonal line because their engines run more efficiently at steady highway speeds than in stop-and-go traffic. Electric vehicles flip that pattern completely, sitting below the line because regenerative braking recaptures energy every time the driver slows down in the city while wind resistance works hardest on the highway. Conventional hybrids bridge the middle, delivering nearly even efficiency everywhere."
+  },
+  {
+    "objectID": "fuel.html#single-charge-range-across-electric-brands",
+    "href": "fuel.html#single-charge-range-across-electric-brands",
+    "title": "Fuel Economy & EV Range",
+    "section": "Single-Charge Range Across Electric Brands",
+    "text": "Single-Charge Range Across Electric Brands\n\n\n\n\n\n\n\n\n\nFigure 2\n\n\n\n\n\nFocusing strictly on pure battery-electric cars reveals two very different engineering paths to long driving range. Sleek sedan specialists like Lucid and Tesla pair long driving distances with bright-red high efficiency through low weight and smooth aerodynamics, whereas electric truck makers like Chevrolet, Rivian, and GMC reach long range by fitting huge, heavy battery packs that draw noticeably more electricity per mile."
+  },
+  {
+    "objectID": "fuel.html#yearly-fuel-and-electricity-costs",
+    "href": "fuel.html#yearly-fuel-and-electricity-costs",
+    "title": "Fuel Economy & EV Range",
+    "section": "Yearly Fuel and Electricity Costs",
+    "text": "Yearly Fuel and Electricity Costs\n\n\n\n\n\n\n\n\n\nFigure 3\n\n\n\n\n\nThose efficiency gains show up directly in owners’ wallets. Pure electric vehicles cost roughly a quarter as much to power each year as traditional gasoline or diesel models, saving typical drivers thousands of dollars over several years of ownership, while hybrids offer meaningful yearly pump savings for drivers without home charging."
   },
   {
     "objectID": "explorer.html",
     "href": "explorer.html",
     "title": "Car Explorer",
     "section": "",
-    "text": "Code\nlibrary(tidyverse)\nlibrary(DT)\n\n\nThis page will let visitors search and filter recent vehicles by manufacturer, model, year, and body style, alongside matched photographs and licensing attribution from CarAPI."
+    "text": "All (15)Electric (5)Gas (7)Hybrid & Plug-In (3)\n\n\n\n\n\n\n\n\n\n\nGas\n\n\n\n\nPOWER\n301 hp\n\n\nMPG\n22/33\n\n\nENERGY\n$2,400/yr\n\n\n\n\n\nPhoto: \nEthan Llamas\n · \nCC BY-SA 4.0\n · \nSource\n\n\n\n\n\n\n\nGas\n\n\n\n\nPOWER\n150 hp\n\n\nMPG\n31/39\n\n\nENERGY\n$1,850/yr\n\n\n\n\n\nPhoto: \nElise240SX\n · \nCC BY-SA 4.0\n · \nSource\n\n\n\n\n\n\n\nGas\n\n\n\n\nPOWER\n325 hp\n\n\nMPG\n19/25\n\n\nENERGY\n$2,950/yr\n\n\n\n\n\nPhoto: \nKevauto\n · \nCC BY-SA 4.0\n · \nSource\n\n\n\n\n\n\n\nGas\n\n\n\n\nPOWER\n495 hp\n\n\nMPG\n16/25\n\n\nENERGY\n$4,050/yr\n\n\n\n\n\nPhoto: \nAlexander Migl\n · \nCC BY-SA 4.0\n · \nSource\n\n\n\n\n\n\n\nElectric\n363 mi range\n\n\n\n\nPOWER\n302 hp\n\n\nMPGe\n145/128\n\n\nENERGY\n$550/yr\n\n\n\n\n\nPhoto: \nAlexander-93\n · \nCC BY-SA 4.0\n · \nSource\n\n\n\n\n\n\n\nElectric\n221 mi range\n\n\n\n\nPOWER\n601 hp\n\n\nMPGe\n84/72\n\n\nENERGY\n$950/yr\n\n\n\n\n\nPhoto: \n© M 93\n · \nCC BY-SA 3.0 de\n · \nSource\n\n\n\n\n\n\n\nElectric\n289 mi range\n\n\n\n\nPOWER\n665 hp\n\n\nMPGe\n82/70\n\n\nENERGY\n$1,000/yr\n\n\n\n\n\nPhoto: \nKevauto\n · \nCC BY-SA 4.0\n · \nSource\n\n\n\n\n\n\n\nElectric\n427 mi range\n\n\n\n\nPOWER\n1,234 hp\n\n\nMPGe\n108/101\n\n\nENERGY\n$700/yr\n\n\n\n\n\nPhoto: \nMr.choppers\n · \nCC BY-SA 3.0\n · \nSource\n\n\n\n\n\n\n\nGas\n\n\n\n\nPOWER\n388 hp\n\n\nMPG\n17/25\n\n\nENERGY\n$3,850/yr\n\n\n\n\n\nPhoto: \nAlexander Migl\n · \nCC BY-SA 4.0\n · \nSource\n\n\n\n\n\n\n\nGas\n\n\n\n\nPOWER\n260 hp\n\n\nMPG\n22/29\n\n\nENERGY\n$2,500/yr\n\n\n\n\n\nPhoto: \nMercurySable99\n · \nCC BY-SA 4.0\n · \nSource\n\n\n\n\n\n\n\nHybrid\n\n\n\n\nPOWER\n150 hp\n\n\nMPG\n57/56\n\n\nENERGY\n$1,100/yr\n\n\n\n\n\nPhoto: \n© M 93\n · \nCC BY-SA 3.0 de\n · \nSource\n\n\n\n\n\n\n\nGas\n\n\n\n\nPOWER\n181 hp\n\n\nMPG\n26/35\n\n\nENERGY\n$2,650/yr\n\n\n\n\n\nPhoto: \nAlexander-93\n · \nCC BY-SA 4.0\n · \nSource\n\n\n\n\n\n\n\nPlug-in Hybrid\n\n\n\n\nPOWER\n270 hp\n\n\nMPG\n20/20\n\n\nENERGY\n$3,100/yr\n\n\n\n\n\nPhoto: \nAlexander Migl\n · \nCC BY-SA 4.0\n · \nSource\n\n\n\n\n\n\n\nElectric\n280 mi range\n\n\n\n\nPOWER\n378 hp\n\n\nMPGe\n91/75\n\n\nENERGY\n$900/yr\n\n\n\n\n\nPhoto: \nAlexander-93\n · \nCC BY-SA 4.0\n · \nSource\n\n\n\n\n\n\n\nPlug-in Hybrid\n\n\n\n\nPOWER\n180 hp\n\n\nMPG\n29/29\n\n\nENERGY\n$2,150/yr\n\n\n\n\n\nPhoto: \nMatthias v.d. Elbe\n · \nCC BY 4.0\n · \nSource\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nElectric\n363 mi range\n\n\n\n\nPOWER\n302 hp\n\n\nMPGe\n145/128\n\n\nENERGY\n$550/yr\n\n\n\n\n\nPhoto: \nAlexander-93\n · \nCC BY-SA 4.0\n · \nSource\n\n\n\n\n\n\n\nElectric\n221 mi range\n\n\n\n\nPOWER\n601 hp\n\n\nMPGe\n84/72\n\n\nENERGY\n$950/yr\n\n\n\n\n\nPhoto: \n© M 93\n · \nCC BY-SA 3.0 de\n · \nSource\n\n\n\n\n\n\n\nElectric\n289 mi range\n\n\n\n\nPOWER\n665 hp\n\n\nMPGe\n82/70\n\n\nENERGY\n$1,000/yr\n\n\n\n\n\nPhoto: \nKevauto\n · \nCC BY-SA 4.0\n · \nSource\n\n\n\n\n\n\n\nElectric\n427 mi range\n\n\n\n\nPOWER\n1,234 hp\n\n\nMPGe\n108/101\n\n\nENERGY\n$700/yr\n\n\n\n\n\nPhoto: \nMr.choppers\n · \nCC BY-SA 3.0\n · \nSource\n\n\n\n\n\n\n\nElectric\n280 mi range\n\n\n\n\nPOWER\n378 hp\n\n\nMPGe\n91/75\n\n\nENERGY\n$900/yr\n\n\n\n\n\nPhoto: \nAlexander-93\n · \nCC BY-SA 4.0\n · \nSource\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nGas\n\n\n\n\nPOWER\n301 hp\n\n\nMPG\n22/33\n\n\nENERGY\n$2,400/yr\n\n\n\n\n\nPhoto: \nEthan Llamas\n · \nCC BY-SA 4.0\n · \nSource\n\n\n\n\n\n\n\nGas\n\n\n\n\nPOWER\n150 hp\n\n\nMPG\n31/39\n\n\nENERGY\n$1,850/yr\n\n\n\n\n\nPhoto: \nElise240SX\n · \nCC BY-SA 4.0\n · \nSource\n\n\n\n\n\n\n\nGas\n\n\n\n\nPOWER\n325 hp\n\n\nMPG\n19/25\n\n\nENERGY\n$2,950/yr\n\n\n\n\n\nPhoto: \nKevauto\n · \nCC BY-SA 4.0\n · \nSource\n\n\n\n\n\n\n\nGas\n\n\n\n\nPOWER\n495 hp\n\n\nMPG\n16/25\n\n\nENERGY\n$4,050/yr\n\n\n\n\n\nPhoto: \nAlexander Migl\n · \nCC BY-SA 4.0\n · \nSource\n\n\n\n\n\n\n\nGas\n\n\n\n\nPOWER\n388 hp\n\n\nMPG\n17/25\n\n\nENERGY\n$3,850/yr\n\n\n\n\n\nPhoto: \nAlexander Migl\n · \nCC BY-SA 4.0\n · \nSource\n\n\n\n\n\n\n\nGas\n\n\n\n\nPOWER\n260 hp\n\n\nMPG\n22/29\n\n\nENERGY\n$2,500/yr\n\n\n\n\n\nPhoto: \nMercurySable99\n · \nCC BY-SA 4.0\n · \nSource\n\n\n\n\n\n\n\nGas\n\n\n\n\nPOWER\n181 hp\n\n\nMPG\n26/35\n\n\nENERGY\n$2,650/yr\n\n\n\n\n\nPhoto: \nAlexander-93\n · \nCC BY-SA 4.0\n · \nSource\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nHybrid\n\n\n\n\nPOWER\n150 hp\n\n\nMPG\n57/56\n\n\nENERGY\n$1,100/yr\n\n\n\n\n\nPhoto: \n© M 93\n · \nCC BY-SA 3.0 de\n · \nSource\n\n\n\n\n\n\n\nPlug-in Hybrid\n\n\n\n\nPOWER\n270 hp\n\n\nMPG\n20/20\n\n\nENERGY\n$3,100/yr\n\n\n\n\n\nPhoto: \nAlexander Migl\n · \nCC BY-SA 4.0\n · \nSource\n\n\n\n\n\n\n\nPlug-in Hybrid\n\n\n\n\nPOWER\n180 hp\n\n\nMPG\n29/29\n\n\nENERGY\n$2,150/yr\n\n\n\n\n\nPhoto: \nMatthias v.d. Elbe\n · \nCC BY 4.0\n · \nSource"
+  },
+  {
+    "objectID": "explorer.html#featured-rides-my-20242027",
+    "href": "explorer.html#featured-rides-my-20242027",
+    "title": "Car Explorer",
+    "section": "",
+    "text": "All (15)Electric (5)Gas (7)Hybrid & Plug-In (3)\n\n\n\n\n\n\n\n\n\n\nGas\n\n\n\n\nPOWER\n301 hp\n\n\nMPG\n22/33\n\n\nENERGY\n$2,400/yr\n\n\n\n\n\nPhoto: \nEthan Llamas\n · \nCC BY-SA 4.0\n · \nSource\n\n\n\n\n\n\n\nGas\n\n\n\n\nPOWER\n150 hp\n\n\nMPG\n31/39\n\n\nENERGY\n$1,850/yr\n\n\n\n\n\nPhoto: \nElise240SX\n · \nCC BY-SA 4.0\n · \nSource\n\n\n\n\n\n\n\nGas\n\n\n\n\nPOWER\n325 hp\n\n\nMPG\n19/25\n\n\nENERGY\n$2,950/yr\n\n\n\n\n\nPhoto: \nKevauto\n · \nCC BY-SA 4.0\n · \nSource\n\n\n\n\n\n\n\nGas\n\n\n\n\nPOWER\n495 hp\n\n\nMPG\n16/25\n\n\nENERGY\n$4,050/yr\n\n\n\n\n\nPhoto: \nAlexander Migl\n · \nCC BY-SA 4.0\n · \nSource\n\n\n\n\n\n\n\nElectric\n363 mi range\n\n\n\n\nPOWER\n302 hp\n\n\nMPGe\n145/128\n\n\nENERGY\n$550/yr\n\n\n\n\n\nPhoto: \nAlexander-93\n · \nCC BY-SA 4.0\n · \nSource\n\n\n\n\n\n\n\nElectric\n221 mi range\n\n\n\n\nPOWER\n601 hp\n\n\nMPGe\n84/72\n\n\nENERGY\n$950/yr\n\n\n\n\n\nPhoto: \n© M 93\n · \nCC BY-SA 3.0 de\n · \nSource\n\n\n\n\n\n\n\nElectric\n289 mi range\n\n\n\n\nPOWER\n665 hp\n\n\nMPGe\n82/70\n\n\nENERGY\n$1,000/yr\n\n\n\n\n\nPhoto: \nKevauto\n · \nCC BY-SA 4.0\n · \nSource\n\n\n\n\n\n\n\nElectric\n427 mi range\n\n\n\n\nPOWER\n1,234 hp\n\n\nMPGe\n108/101\n\n\nENERGY\n$700/yr\n\n\n\n\n\nPhoto: \nMr.choppers\n · \nCC BY-SA 3.0\n · \nSource\n\n\n\n\n\n\n\nGas\n\n\n\n\nPOWER\n388 hp\n\n\nMPG\n17/25\n\n\nENERGY\n$3,850/yr\n\n\n\n\n\nPhoto: \nAlexander Migl\n · \nCC BY-SA 4.0\n · \nSource\n\n\n\n\n\n\n\nGas\n\n\n\n\nPOWER\n260 hp\n\n\nMPG\n22/29\n\n\nENERGY\n$2,500/yr\n\n\n\n\n\nPhoto: \nMercurySable99\n · \nCC BY-SA 4.0\n · \nSource\n\n\n\n\n\n\n\nHybrid\n\n\n\n\nPOWER\n150 hp\n\n\nMPG\n57/56\n\n\nENERGY\n$1,100/yr\n\n\n\n\n\nPhoto: \n© M 93\n · \nCC BY-SA 3.0 de\n · \nSource\n\n\n\n\n\n\n\nGas\n\n\n\n\nPOWER\n181 hp\n\n\nMPG\n26/35\n\n\nENERGY\n$2,650/yr\n\n\n\n\n\nPhoto: \nAlexander-93\n · \nCC BY-SA 4.0\n · \nSource\n\n\n\n\n\n\n\nPlug-in Hybrid\n\n\n\n\nPOWER\n270 hp\n\n\nMPG\n20/20\n\n\nENERGY\n$3,100/yr\n\n\n\n\n\nPhoto: \nAlexander Migl\n · \nCC BY-SA 4.0\n · \nSource\n\n\n\n\n\n\n\nElectric\n280 mi range\n\n\n\n\nPOWER\n378 hp\n\n\nMPGe\n91/75\n\n\nENERGY\n$900/yr\n\n\n\n\n\nPhoto: \nAlexander-93\n · \nCC BY-SA 4.0\n · \nSource\n\n\n\n\n\n\n\nPlug-in Hybrid\n\n\n\n\nPOWER\n180 hp\n\n\nMPG\n29/29\n\n\nENERGY\n$2,150/yr\n\n\n\n\n\nPhoto: \nMatthias v.d. Elbe\n · \nCC BY 4.0\n · \nSource\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nElectric\n363 mi range\n\n\n\n\nPOWER\n302 hp\n\n\nMPGe\n145/128\n\n\nENERGY\n$550/yr\n\n\n\n\n\nPhoto: \nAlexander-93\n · \nCC BY-SA 4.0\n · \nSource\n\n\n\n\n\n\n\nElectric\n221 mi range\n\n\n\n\nPOWER\n601 hp\n\n\nMPGe\n84/72\n\n\nENERGY\n$950/yr\n\n\n\n\n\nPhoto: \n© M 93\n · \nCC BY-SA 3.0 de\n · \nSource\n\n\n\n\n\n\n\nElectric\n289 mi range\n\n\n\n\nPOWER\n665 hp\n\n\nMPGe\n82/70\n\n\nENERGY\n$1,000/yr\n\n\n\n\n\nPhoto: \nKevauto\n · \nCC BY-SA 4.0\n · \nSource\n\n\n\n\n\n\n\nElectric\n427 mi range\n\n\n\n\nPOWER\n1,234 hp\n\n\nMPGe\n108/101\n\n\nENERGY\n$700/yr\n\n\n\n\n\nPhoto: \nMr.choppers\n · \nCC BY-SA 3.0\n · \nSource\n\n\n\n\n\n\n\nElectric\n280 mi range\n\n\n\n\nPOWER\n378 hp\n\n\nMPGe\n91/75\n\n\nENERGY\n$900/yr\n\n\n\n\n\nPhoto: \nAlexander-93\n · \nCC BY-SA 4.0\n · \nSource\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nGas\n\n\n\n\nPOWER\n301 hp\n\n\nMPG\n22/33\n\n\nENERGY\n$2,400/yr\n\n\n\n\n\nPhoto: \nEthan Llamas\n · \nCC BY-SA 4.0\n · \nSource\n\n\n\n\n\n\n\nGas\n\n\n\n\nPOWER\n150 hp\n\n\nMPG\n31/39\n\n\nENERGY\n$1,850/yr\n\n\n\n\n\nPhoto: \nElise240SX\n · \nCC BY-SA 4.0\n · \nSource\n\n\n\n\n\n\n\nGas\n\n\n\n\nPOWER\n325 hp\n\n\nMPG\n19/25\n\n\nENERGY\n$2,950/yr\n\n\n\n\n\nPhoto: \nKevauto\n · \nCC BY-SA 4.0\n · \nSource\n\n\n\n\n\n\n\nGas\n\n\n\n\nPOWER\n495 hp\n\n\nMPG\n16/25\n\n\nENERGY\n$4,050/yr\n\n\n\n\n\nPhoto: \nAlexander Migl\n · \nCC BY-SA 4.0\n · \nSource\n\n\n\n\n\n\n\nGas\n\n\n\n\nPOWER\n388 hp\n\n\nMPG\n17/25\n\n\nENERGY\n$3,850/yr\n\n\n\n\n\nPhoto: \nAlexander Migl\n · \nCC BY-SA 4.0\n · \nSource\n\n\n\n\n\n\n\nGas\n\n\n\n\nPOWER\n260 hp\n\n\nMPG\n22/29\n\n\nENERGY\n$2,500/yr\n\n\n\n\n\nPhoto: \nMercurySable99\n · \nCC BY-SA 4.0\n · \nSource\n\n\n\n\n\n\n\nGas\n\n\n\n\nPOWER\n181 hp\n\n\nMPG\n26/35\n\n\nENERGY\n$2,650/yr\n\n\n\n\n\nPhoto: \nAlexander-93\n · \nCC BY-SA 4.0\n · \nSource\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nHybrid\n\n\n\n\nPOWER\n150 hp\n\n\nMPG\n57/56\n\n\nENERGY\n$1,100/yr\n\n\n\n\n\nPhoto: \n© M 93\n · \nCC BY-SA 3.0 de\n · \nSource\n\n\n\n\n\n\n\nPlug-in Hybrid\n\n\n\n\nPOWER\n270 hp\n\n\nMPG\n20/20\n\n\nENERGY\n$3,100/yr\n\n\n\n\n\nPhoto: \nAlexander Migl\n · \nCC BY-SA 4.0\n · \nSource\n\n\n\n\n\n\n\nPlug-in Hybrid\n\n\n\n\nPOWER\n180 hp\n\n\nMPG\n29/29\n\n\nENERGY\n$2,150/yr\n\n\n\n\n\nPhoto: \nMatthias v.d. Elbe\n · \nCC BY 4.0\n · \nSource"
+  },
+  {
+    "objectID": "explorer.html#sweet-spot-finder-power-vs.-annual-fuel-cost-n-2550",
+    "href": "explorer.html#sweet-spot-finder-power-vs.-annual-fuel-cost-n-2550",
+    "title": "Car Explorer",
+    "section": "Sweet-Spot Finder: Power vs. Annual Fuel Cost (N = 2,550)",
+    "text": "Sweet-Spot Finder: Power vs. Annual Fuel Cost (N = 2,550)\nHover or zoom into the bottom-right corner to spot high-horsepower cars with ultra-low annual running costs (MY 2022–2027).\n\n\n\n\n\n\n\n\n\nFigure 1"
+  },
+  {
+    "objectID": "explorer.html#search-all-28248-models-19842027",
+    "href": "explorer.html#search-all-28248-models-19842027",
+    "title": "Car Explorer",
+    "section": "Search All 28,248 Models (1984–2027)",
+    "text": "Search All 28,248 Models (1984–2027)\nSorted newest-first (2027 down to 1984)—type any classic or modern car in Search, drag the Year slider, or click a quick filter below.\n\n  Search Table Key\n  \n    Style Vehicle body shape (SUV, Pickup, Sedan…)\n    Powertrain Gas, Hybrid, Plug-in Hybrid, Diesel, or Electric\n    HP Certified engine or motor horsepower\n    City / Hwy MPG (fuel cars) or MPGe (electric cars)\n    EV Mi Single-charge driving range in miles (EVs)\n    $/Yr EPA estimated yearly fuel or electricity cost\n    MSRP Original new-car sticker price (when available)\n  \n\n\n\n  Quick Jump:\n  🆕 2022–2027\n  🕰️ 1990s Classics\n  📼 1980s Icons\n  ⚡ Electric\n  🌱 Hybrid\n  🏎️ Porsche\n  🏁 Corvette\n  ↺ All 1984–2027\n\n\n\n\n\n\nTable 1"
   }
 ]
