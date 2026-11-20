@@ -12,11 +12,7 @@
 body {
   color: #242424;
   line-height: 1.65;
-  background:
-    linear-gradient(rgba(17, 17, 17, 0.035) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(17, 17, 17, 0.035) 1px, transparent 1px),
-    #fdfdfc;
-  background-size: 24px 24px;
+  background: #ffffff;
 }
 
 a,
@@ -74,13 +70,12 @@ a:hover {
 .hero-banner {
   position: relative;
   overflow: hidden;
-  background:
-    radial-gradient(circle at 85% 20%, rgba(239, 35, 60, 0.28), transparent 24%),
-    linear-gradient(135deg, #111111 0%, #292929 72%, #111111 100%);
+  background: linear-gradient(135deg, #111111 0%, #111111 82%, #d90429 82%, #d90429 88%, #111111 88%);
   color: #ffffff;
   padding: 2.5rem 2.25rem;
   border: 1px solid #333333;
-  border-radius: 1rem;
+  border-radius: 0;
+  clip-path: polygon(0 0, calc(100% - 28px) 0, 100% 28px, 100% 100%, 28px 100%, 0 calc(100% - 28px));
   margin-bottom: 2rem;
   box-shadow: 0 16px 38px rgba(17, 17, 17, 0.16);
 }
@@ -88,13 +83,16 @@ a:hover {
 .hero-banner::after {
   content: "";
   position: absolute;
-  right: -3.5rem;
-  bottom: -5.5rem;
-  width: 14rem;
-  height: 14rem;
-  border: 1.5rem solid rgba(217, 4, 41, 0.22);
+  right: 2.25rem;
+  top: 2.25rem;
+  width: 5.25rem;
+  height: 5.25rem;
+  border: 0.7rem solid #ef233c;
   border-radius: 50%;
-  transform: rotate(-12deg);
+  box-shadow:
+    inset 0 0 0 0.8rem #111111,
+    0 0 0 2px #ffffff;
+  opacity: 0.92;
 }
 
 .hero-banner h1,
@@ -112,7 +110,7 @@ a:hover {
   padding: 0.15rem 0.7rem;
   margin-bottom: 0.9rem;
   border-left: 5px solid var(--car-red-bright);
-  background: rgba(239, 35, 60, 0.12);
+  background: linear-gradient(90deg, rgba(239, 35, 60, 0.24), transparent);
   text-transform: uppercase;
   letter-spacing: 0.08em;
 }
@@ -135,9 +133,11 @@ a:hover {
   overflow: hidden;
   background: #ffffff;
   border: 1px solid #deded9;
-  border-top: 5px solid var(--car-red);
-  border-radius: 0.8rem;
-  padding: 1.15rem 1.25rem;
+  border-top: 6px solid var(--car-red);
+  border-right: 12px solid var(--car-black);
+  border-radius: 0;
+  clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 0 100%);
+  padding: 1.15rem 1.5rem 1.15rem 1.25rem;
   box-shadow: 0 8px 24px rgba(17, 17, 17, 0.08);
   transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
 }
@@ -145,12 +145,15 @@ a:hover {
 .stat-card::after {
   content: "";
   position: absolute;
-  right: -1.5rem;
-  bottom: -2rem;
-  width: 5rem;
-  height: 5rem;
+  right: 0.38rem;
+  bottom: 0.55rem;
+  width: 1.5rem;
+  height: 1.5rem;
   border-radius: 50%;
-  background: rgba(217, 4, 41, 0.06);
+  background:
+    radial-gradient(circle, #ffffff 0 18%, #777777 20% 38%, #111111 40%);
+  border: 2px solid #ffffff;
+  box-shadow: 0 0 0 1px #111111;
 }
 
 .stat-card:hover {
@@ -180,10 +183,11 @@ a:hover {
 .datatables {
   background: #ffffff;
   border: 1px solid #deded9;
-  border-radius: 0.8rem;
+  border-top: 5px solid var(--car-red);
+  border-radius: 0;
   padding: 1rem;
-  margin: 1.25rem 0;
-  box-shadow: 0 8px 24px rgba(17, 17, 17, 0.07);
+  margin: 0.5rem 0 1.25rem;
+  box-shadow: 0 10px 28px rgba(17, 17, 17, 0.10);
 }
 
 .plotly {

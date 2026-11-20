@@ -1,12 +1,211 @@
 ---
 title: "Car Explorer"
-subtitle: "Search and filter recent vehicles, specifications, and photographs"
+subtitle: "Search and filter 2022–2027 vehicles, compare specifications, and view licensed photographs"
+resources:
+  - images/*
 ---
 
 ```{r}
 #| label: setup
 library(tidyverse)
 library(DT)
+library(htmltools)
+library(scales)
+
+recent_df <- read_csv("data/processed/recent_vehicles_2022_2027.csv", show_col_types = FALSE)
+img_df <- read_csv("data/processed/vehicle_images.csv", show_col_types = FALSE)
+
+n_recent <- nrow(recent_df)
+n_makes <- n_distinct(recent_df$make)
 ```
 
-This page will let visitors search and filter recent vehicles by manufacturer, model, year, and body style, alongside matched photographs and licensing attribution from CarAPI.
+## Explore `r comma(n_recent)` Recent Vehicles (MY 2022–2027)
+
+Use this page to inspect individual vehicles across **`r n_makes` manufacturers** from `recent_vehicles_2022_2027.csv` (combining Trimslate 2022–2027 specifications with MY 2024 EPA certification records):
+
+1. **Featured Vehicle Photo & Spec Gallery (`N = 15` matched models):** Browse recent models across powertrains with Creative Commons photographs and full photographer/license attribution from Wikimedia Commons.
+2. **Full Interactive Search & Filter Table (`N = `r comma(n_recent)`` trims):** Filter all 2022–2027 trims by manufacturer, model, year, body style, powertrain, horsepower, MPG/MPGe, electric range, and annual fuel cost.
+
+---
+
+## 1. Featured Vehicle Gallery & Attribution
+
+```{r}
+#| label: build-gallery-data
+
+# Match each downloaded image to the newest well-populated 2024-2027 trim for that make & model
+featured_specs <- img_df |>
+  pmap(\(make, model_prefix, local_image, commons_file, source_url, photographer, license, license_url) {
+    matches <- recent_df |>
+      filter(
+        .data$make == .env$make,
+        str_detect(model, fixed(model_prefix, ignore_case = TRUE)),
+        !is.na(mpg_combined)
+      ) |>
+      # Prefer trims that also have certified horsepower when available
+      arrange(is.na(horsepower_combined), desc(year))
+
+    top_row <- slice_head(matches, n = 1)
+    bind_cols(
+      top_row,
+      tibble(
+        local_image = local_image,
+        source_url = source_url,
+        photographer = photographer,
+        license = license,
+        license_url = license_url
+      )
+    )
+  }) |>
+  list_rbind()
+
+render_vehicle_cards <- function(df) {
+  cards <- pmap(df, function(...) {
+    row <- list(...)
+    eff_unit <- if (identical(row$powertrain, "Electric")) "MPGe" else "MPG"
+    hp_label <- if (!is.na(row$horsepower_combined)) {
+      paste0(comma(row$horsepower_combined), " hp")
+    } else {
+      "Not rated (EV/Hybrid)"
+    }
+    range_line <- if (identical(row$powertrain, "Electric") && !is.na(row$electric_range) && row$electric_range > 0) {
+      tags$div(tags$strong("EV Range: "), paste0(row$electric_range, " miles"))
+    } else {
+      NULL
+    }
+    cost_label <- if (!is.na(row$annual_fuel_cost)) dollar(row$annual_fuel_cost) else "N/A"
+
+    div(
+      style = "background:#ffffff; border:1px solid #e2e8f0; border-radius:0.6rem; overflow:hidden; display:flex; flex-direction:column; justify-content:space-between;",
+      div(
+        tags$img(
+          src = row$local_image,
+          alt = paste(row$year, row$make, row$model),
+          style = "width:100%; height:185px; object-fit:cover; border-bottom:1px solid #e2e8f0;"
+        ),
+        div(
+          style = "padding:0.9rem 1rem;",
+          tags$h4(
+            style = "margin:0 0 0.25rem 0; font-size:1.05rem;",
+            paste(row$year, row$make, row$model)
+          ),
+          tags$div(
+            style = "font-size:0.82rem; color:#4a5568; margin-bottom:0.55rem;",
+            paste0(row$powertrain, " · ", row$body_group)
+          ),
+          tags$div(
+            style = "font-size:0.88rem; line-height:1.5;",
+            tags$div(tags$strong("Horsepower: "), hp_label),
+            tags$div(
+              tags$strong("Efficiency: "),
+              paste0(row$mpg_city, " city / ", row$mpg_highway, " hwy ", eff_unit)
+            ),
+            range_line,
+            tags$div(tags$strong("Est. Fuel/Energy Cost: "), paste0(cost_label, "/yr"))
+          )
+        )
+      ),
+      div(
+        style = "background:#f8f9fa; border-top:1px solid #edf2f7; padding:0.5rem 1rem; font-size:0.74rem; color:#4a5568;",
+        "Photo: ", row$photographer, " · ",
+        tags$a(href = row$license_url, target = "_blank", rel = "noopener", row$license),
+        " · ",
+        tags$a(href = row$source_url, target = "_blank", rel = "noopener", "Source")
+      )
+    )
+  })
+
+  div(
+    style = "display:grid; grid-template-columns:repeat(auto-fill, minmax(270px, 1fr)); gap:1.1rem; margin:1rem 0;",
+    cards
+  )
+}
+```
+
+::: {.panel-tabset}
+
+### All Featured (`r nrow(featured_specs)`)
+
+```{r}
+#| label: gallery-all
+render_vehicle_cards(featured_specs)
+```
+
+### Electric (`r sum(featured_specs$powertrain == "Electric")`)
+
+```{r}
+#| label: gallery-ev
+render_vehicle_cards(featured_specs |> filter(powertrain == "Electric"))
+```
+
+### Gas (`r sum(featured_specs$powertrain == "Gas")`)
+
+```{r}
+#| label: gallery-gas
+render_vehicle_cards(featured_specs |> filter(powertrain == "Gas"))
+```
+
+### Hybrid & Plug-In (`r sum(featured_specs$powertrain %in% c("Hybrid", "Plug-in Hybrid"))`)
+
+```{r}
+#| label: gallery-hybrid
+render_vehicle_cards(featured_specs |> filter(powertrain %in% c("Hybrid", "Plug-in Hybrid")))
+```
+
+:::
+
+*Image Provenance Note: Because `carapi.trustcar.info` is currently offline in DNS, matched vehicle photographs and Creative Commons license metadata (`CC BY` / `CC BY-SA`) are retrieved reproducibly via [`scripts/download_images.R`](scripts/download_images.R) from **Wikimedia Commons**—the same open-licensed image repository referenced by Trimslate.*
+
+---
+
+## 2. Search & Filter All 2022–2027 Vehicles (`N = `r comma(n_recent)`` Trims)
+
+Use the **Search** box at top right or the **column filter boxes** directly beneath each column header to filter by model year, manufacturer, model, body style, powertrain, horsepower, efficiency, EV range, or annual fuel cost.
+
+```{r}
+#| label: tbl-car-explorer
+
+explorer_table <- recent_df |>
+  mutate(
+    ev_range_only = if_else(powertrain == "Electric", electric_range, NA_real_)
+  ) |>
+  select(
+    Year = year,
+    Make = make,
+    Model = model,
+    Trim = trim,
+    `Body Style` = body_group,
+    Powertrain = powertrain,
+    `HP` = horsepower_combined,
+    `City` = mpg_city,
+    `Hwy` = mpg_highway,
+    `EV Range (mi)` = ev_range_only,
+    `Fuel Cost ($/yr)` = annual_fuel_cost
+  ) |>
+  mutate(
+    Make = as.factor(Make),
+    `Body Style` = as.factor(`Body Style`),
+    Powertrain = as.factor(Powertrain)
+  )
+
+datatable(
+  explorer_table,
+  filter = "top",
+  rownames = FALSE,
+  options = list(
+    pageLength = 15,
+    scrollX = TRUE,
+    autoWidth = TRUE
+  ),
+  caption = htmltools::tags$caption(
+    style = "caption-side: top; text-align: left; font-weight: 600; margin-bottom: 0.5rem;",
+    paste0(
+      "Interactive 2022-2027 Vehicle Specifications Explorer (N = ",
+      comma(n_recent),
+      " Trims; City/Hwy reported in MPG for fuel vehicles and MPGe for Electric vehicles)"
+    )
+  )
+) |>
+  formatCurrency("Fuel Cost ($/yr)", currency = "$", digits = 0) |>
+  formatRound(c("HP", "City", "Hwy", "EV Range (mi)"), digits = 0)
+```
