@@ -1,18 +1,97 @@
 ---
 title: "About This Project"
+subtitle: "Author information, reproducible data pipeline, and dataset & image citations"
 ---
 
-## Project Overview
+```{r}
+#| label: setup
+library(tidyverse)
+library(knitr)
+library(scales)
 
-**What Makes a Car Worth Its Price?** is a data science final project built with R, the tidyverse, Quarto, and GitHub Pages.
+epa24 <- read_csv("data/processed/epa_clean.csv", show_col_types = FALSE)
+epa_trends <- read_csv("data/processed/epa_trends_clean.csv", show_col_types = FALSE)
+msrp_clean <- read_csv("data/processed/msrp_clean.csv", show_col_types = FALSE)
+msrp_merged <- read_csv("data/processed/msrp_merged.csv", show_col_types = FALSE)
+ts_clean <- read_csv("data/processed/trimslate_clean.csv", show_col_types = FALSE)
+recent_df <- read_csv("data/processed/recent_vehicles_2022_2027.csv", show_col_types = FALSE)
+img_df <- read_csv("data/processed/vehicle_images.csv", show_col_types = FALSE)
+```
 
-## Author & Repository
+## Project Summary
 
-- **GitHub Repository:** <https://github.com/mt-0708/Car-Explorer>
+**What Makes a Car Worth Its Price?** investigates how vehicle sticker price (MSRP), engine horsepower, fuel economy, electric driving range, and manufacturer positioning relate to one another—combining verified MSRP benchmarks with recent **2022–2027** vehicle specifications and **50 years (1975–2025)** of U.S. EPA fleet trends.
+
+### Reproducible R & Quarto Pipeline
+
+All data downloading, cleaning, deduplication, and visualization steps are scripted in R using the `tidyverse`, `ggplot2`, `plotly`, and `DT`:
+
+1. **Download raw sources (`data/raw/`):** `scripts/download_epa.R`, `scripts/download_msrp.R`, `scripts/download_trimslate.R`, and `scripts/download_images.R`.
+2. **Clean individual tables (`data/processed/`):** `scripts/clean_datasets.R` standardizes column names, converts string placeholders (`"N/A"`, `"UNKNOWN"`, `"-"`) to `NA`, and preserves untouched raw files.
+3. **Connect without duplication:** `scripts/merge_datasets.R` summarizes lookup tables to one row per `(year, make, model)` prior to `left_join(..., relationship = "many-to-one")` so zero observations are duplicated.
+
+```{r}
+#| label: tbl-dataset-summary
+
+dataset_overview <- tibble(
+  Dataset = c(
+    "EPA Automotive Trends (MY 2024 Detailed + 1975–2025 Summary)",
+    "Original Cars MSRP Dataset (Raw Cleaned / Deduplicated MY 2001–2017)",
+    "Trimslate Vehicle Specifications (Full / Recent MY 2022–2027)"
+  ),
+  `Model Years` = c(
+    "1975–2025 & 2024",
+    "1990–2017 (2001–2017 MSRP)",
+    "1984–2027 (2022–2027 Focus)"
+  ),
+  `Observations` = c(
+    paste0(comma(nrow(epa24) + nrow(epa_trends)), " (", comma(nrow(epa24)), " + ", nrow(epa_trends), ")"),
+    paste0(comma(nrow(msrp_clean)), " raw / ", comma(nrow(msrp_merged)), " usable"),
+    paste0(comma(nrow(ts_clean)), " total / ", comma(nrow(recent_df)), " recent")
+  ),
+  `Primary Website Pages` = c(
+    "Automotive Trends, Car Explorer",
+    "Home, Price & Performance",
+    "Car Explorer, Fuel Economy, Price & Performance"
+  )
+)
+
+kable(dataset_overview)
+```
+
+---
+
+## Author & Course Information
+
+- **Author:** Mayah Torres ([`@mt-0708`](https://github.com/mt-0708))
+- **Project GitHub Repository:** <https://github.com/mt-0708/Car-Explorer>
+- **Course Background:** Built as a data science final project following [*Preceptor's Primer for Bayesian Data Science*](https://ppbds.github.io/primer/) using R, the tidyverse, Quarto, and GitHub Pages.
+
+---
 
 ## Data Sources & Citations
 
-1. **U.S. Environmental Protection Agency (EPA)** — *Automotive Trends Data*: <https://www.epa.gov/automotive-trends/explore-automotive-trends-data>
-2. **Original Cars MSRP Dataset** — GitHub Gist (`dvinubius`): <https://gist.github.com/dvinubius/33486dad2dc86319f0a06ffdb1d4f34f>
-3. **Trimslate Vehicle Specifications** — <https://trimslate.com/data>
-4. **CarAPI Vehicle Photographs** — <https://carapi.trustcar.info/> (photographs matched with attribution and license metadata preserved)
+1. **U.S. Environmental Protection Agency (EPA)** — *2025 EPA Automotive Trends Report: Explore Automotive Trends Data* (1975–2025 Summary Trends and Model Year 2024 Fuel Economy and Technology Data). U.S. Government work (Public Domain). Available at: <https://www.epa.gov/automotive-trends/explore-automotive-trends-data>
+2. **Trimslate** — *The Trimslate Vehicle Specifications Dataset* (52,130 trims across model years 1984–2027, compiled from EPA FuelEconomy.gov, EPA Test Car List, and NHTSA records). Used under **CC BY 4.0** attribution requirements—credit to [Trimslate](https://trimslate.com) (<https://trimslate.com/data>).
+3. **Original Cars MSRP Dataset** — Curated vehicle MSRP and engine specifications dataset (`cars_msrp_kaggle.csv`, originally compiled from Edmunds and Kaggle / Cooper Union). Hosted via GitHub Gist (`dvinubius`): <https://gist.github.com/dvinubius/33486dad2dc86319f0a06ffdb1d4f34f>
+
+---
+
+## Vehicle Photograph Attribution & Licenses
+
+Because `carapi.trustcar.info` was unreachable in DNS at build time, matched recent vehicle photographs on the **[Car Explorer](explorer.qmd)** page were retrieved via [`scripts/download_images.R`](scripts/download_images.R) from **Wikimedia Commons** (the same Creative Commons image repository used by Trimslate). Full photographer and license credits for all **`r nrow(img_df)`** local images are preserved below:
+
+```{r}
+#| label: tbl-image-credits
+
+img_credits <- img_df |>
+  transmute(
+    Vehicle = paste(make, model_prefix),
+    `Local File` = paste0("`", local_image, "`"),
+    Photographer = photographer,
+    License = paste0("[", license, "](", license_url, ")"),
+    Source = paste0("[Wikimedia Commons](", source_url, ")")
+  )
+
+kable(img_credits)
+```

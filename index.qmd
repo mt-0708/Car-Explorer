@@ -1,6 +1,5 @@
 ---
-title: "What Makes a Car Worth Its Price?"
-subtitle: "Exploring Price, Horsepower, Fuel Economy, and Manufacturer Trends"
+pagetitle: "Car Explorer"
 ---
 
 ```{r}
@@ -10,11 +9,9 @@ library(plotly)
 library(scales)
 
 msrp_df <- read_csv("data/processed/msrp_merged.csv", show_col_types = FALSE)
-recent_df <- read_csv("data/processed/recent_vehicles_2022_2027.csv", show_col_types = FALSE)
 trends_df <- read_csv("data/processed/epa_trends_clean.csv", show_col_types = FALSE)
 
 n_msrp <- nrow(msrp_df)
-n_recent <- nrow(recent_df)
 n_years_epa <- n_distinct(trends_df$year)
 ```
 
@@ -78,29 +75,12 @@ ggplotly(p_home, tooltip = "text") |>
 ```
 :::
 
-### Key Takeaways & Data Filtering Notes
-
-- **Exponential price scaling:** Doubling horsepower from 150 HP to 300 HP moves typical vehicles from economy hatchbacks and compact sedans (`~$18,000–$24,000`) into mid-tier SUVs, pickups, and sport sedans (`~$35,000–$50,000`), while Coupes and Convertibles above 500 HP surge past `$100,000`.
-- **Transparent filtering (`11,914` $\rightarrow$ ``r comma(n_msrp)`` rows):** Starting from the `11,914` raw rows in `cars_msrp_kaggle.csv`, we removed `715` exact duplicate rows, excluded `1,368` pre-2001 observations (which recorded `$2,000` used trade-in estimates rather than original new-car MSRPs), and dropped `69` rows missing engine horsepower—leaving **`r comma(n_msrp)`** verified new-vehicle observations.
-- **Connecting recent vehicles (2022–2027):** Because Trimslate's public CSV export omits MSRP values, all price graphics use verified `msrp_merged.csv` observations while our **[Car Explorer](explorer.qmd)**, **[Fuel Economy](fuel.qmd)**, and **[Automotive Trends](trends.qmd)** tabs focus on **`r comma(n_recent)`** recent **2022–2027** vehicles and **1975–2025** EPA records.
-
-::: {.hero-banner}
-## Research Question
-
-**How do vehicle price, horsepower, fuel economy, and manufacturer relate to one another in recent vehicles?**
-
-Combining manufacturer suggested retail prices (MSRP), Trimslate vehicle specifications (through model year 2027), and U.S. EPA certification and historical trend records (1975–2025), this website investigates what buyers gain in performance and efficiency as vehicle prices climb.
-:::
+This chart compares engine horsepower with vehicle MSRP across body styles. Higher-horsepower vehicles generally cost more, while the log scale makes everyday cars easier to compare with high-performance vehicles.
 
 ::: {.stat-grid}
 ::: {.stat-card}
 ### `r comma(n_msrp)` Vehicles
 Deduplicated new-vehicle MSRP & horsepower records (`msrp_merged.csv`, MY 2001–2017).
-:::
-
-::: {.stat-card}
-### `r comma(n_recent)` Recent Trims
-Model year **2022–2027** vehicles across **`r n_distinct(recent_df$make)`** makes from Trimslate & EPA (`recent_vehicles_2022_2027.csv`).
 :::
 
 ::: {.stat-card}

@@ -26,6 +26,41 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -135,9 +170,13 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#project-overview" id="toc-project-overview" class="nav-link active" data-scroll-target="#project-overview">Project Overview</a></li>
-  <li><a href="#author-repository" id="toc-author-repository" class="nav-link" data-scroll-target="#author-repository">Author &amp; Repository</a></li>
+  <li><a href="#project-summary" id="toc-project-summary" class="nav-link active" data-scroll-target="#project-summary">Project Summary</a>
+  <ul class="collapse">
+  <li><a href="#reproducible-r-quarto-pipeline" id="toc-reproducible-r-quarto-pipeline" class="nav-link" data-scroll-target="#reproducible-r-quarto-pipeline">Reproducible R &amp; Quarto Pipeline</a></li>
+  </ul></li>
+  <li><a href="#author-course-information" id="toc-author-course-information" class="nav-link" data-scroll-target="#author-course-information">Author &amp; Course Information</a></li>
   <li><a href="#data-sources-citations" id="toc-data-sources-citations" class="nav-link" data-scroll-target="#data-sources-citations">Data Sources &amp; Citations</a></li>
+  <li><a href="#vehicle-photograph-attribution-licenses" id="toc-vehicle-photograph-attribution-licenses" class="nav-link" data-scroll-target="#vehicle-photograph-attribution-licenses">Vehicle Photograph Attribution &amp; Licenses</a></li>
   </ul>
 </nav>
     </div>
@@ -147,6 +186,7 @@ ul.task-list li input[type="checkbox"] {
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
 <h1 class="title">About This Project</h1>
+<p class="subtitle lead">Author information, reproducible data pipeline, and dataset &amp; image citations</p>
 </div>
 
 
@@ -163,24 +203,277 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<section id="project-overview" class="level2">
-<h2 class="anchored" data-anchor-id="project-overview">Project Overview</h2>
-<p><strong>What Makes a Car Worth Its Price?</strong> is a data science final project built with R, the tidyverse, Quarto, and GitHub Pages.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(knitr)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(scales)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>epa24 <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"data/processed/epa_clean.csv"</span>, <span class="at">show_col_types =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>epa_trends <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"data/processed/epa_trends_clean.csv"</span>, <span class="at">show_col_types =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>msrp_clean <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"data/processed/msrp_clean.csv"</span>, <span class="at">show_col_types =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>msrp_merged <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"data/processed/msrp_merged.csv"</span>, <span class="at">show_col_types =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>ts_clean <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"data/processed/trimslate_clean.csv"</span>, <span class="at">show_col_types =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>recent_df <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"data/processed/recent_vehicles_2022_2027.csv"</span>, <span class="at">show_col_types =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>img_df <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"data/processed/vehicle_images.csv"</span>, <span class="at">show_col_types =</span> <span class="cn">FALSE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<section id="project-summary" class="level2">
+<h2 class="anchored" data-anchor-id="project-summary">Project Summary</h2>
+<p><strong>What Makes a Car Worth Its Price?</strong> investigates how vehicle sticker price (MSRP), engine horsepower, fuel economy, electric driving range, and manufacturer positioning relate to one another—combining verified MSRP benchmarks with recent <strong>2022–2027</strong> vehicle specifications and <strong>50 years (1975–2025)</strong> of U.S. EPA fleet trends.</p>
+<section id="reproducible-r-quarto-pipeline" class="level3">
+<h3 class="anchored" data-anchor-id="reproducible-r-quarto-pipeline">Reproducible R &amp; Quarto Pipeline</h3>
+<p>All data downloading, cleaning, deduplication, and visualization steps are scripted in R using the <code>tidyverse</code>, <code>ggplot2</code>, <code>plotly</code>, and <code>DT</code>:</p>
+<ol type="1">
+<li><strong>Download raw sources (<code>data/raw/</code>):</strong> <code>scripts/download_epa.R</code>, <code>scripts/download_msrp.R</code>, <code>scripts/download_trimslate.R</code>, and <code>scripts/download_images.R</code>.</li>
+<li><strong>Clean individual tables (<code>data/processed/</code>):</strong> <code>scripts/clean_datasets.R</code> standardizes column names, converts string placeholders (<code>"N/A"</code>, <code>"UNKNOWN"</code>, <code>"-"</code>) to <code>NA</code>, and preserves untouched raw files.</li>
+<li><strong>Connect without duplication:</strong> <code>scripts/merge_datasets.R</code> summarizes lookup tables to one row per <code>(year, make, model)</code> prior to <code>left_join(..., relationship = "many-to-one")</code> so zero observations are duplicated.</li>
+</ol>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>dataset_overview <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">Dataset =</span> <span class="fu">c</span>(</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"EPA Automotive Trends (MY 2024 Detailed + 1975–2025 Summary)"</span>,</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Original Cars MSRP Dataset (Raw Cleaned / Deduplicated MY 2001–2017)"</span>,</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Trimslate Vehicle Specifications (Full / Recent MY 2022–2027)"</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">Model Years</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">c</span>(</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">"1975–2025 &amp; 2024"</span>,</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">"1990–2017 (2001–2017 MSRP)"</span>,</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>    <span class="st">"1984–2027 (2022–2027 Focus)"</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">Observations</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">c</span>(</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">paste0</span>(<span class="fu">comma</span>(<span class="fu">nrow</span>(epa24) <span class="sc">+</span> <span class="fu">nrow</span>(epa_trends)), <span class="st">" ("</span>, <span class="fu">comma</span>(<span class="fu">nrow</span>(epa24)), <span class="st">" + "</span>, <span class="fu">nrow</span>(epa_trends), <span class="st">")"</span>),</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>    <span class="fu">paste0</span>(<span class="fu">comma</span>(<span class="fu">nrow</span>(msrp_clean)), <span class="st">" raw / "</span>, <span class="fu">comma</span>(<span class="fu">nrow</span>(msrp_merged)), <span class="st">" usable"</span>),</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>    <span class="fu">paste0</span>(<span class="fu">comma</span>(<span class="fu">nrow</span>(ts_clean)), <span class="st">" total / "</span>, <span class="fu">comma</span>(<span class="fu">nrow</span>(recent_df)), <span class="st">" recent"</span>)</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">Primary Website Pages</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">c</span>(</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Automotive Trends, Car Explorer"</span>,</span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Home, Price &amp; Performance"</span>,</span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Car Explorer, Fuel Economy, Price &amp; Performance"</span></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(dataset_overview)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div id="tbl-dataset-summary" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl quarto-uncaptioned" id="tbl-dataset-summary-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;1
+</figcaption>
+<div aria-describedby="tbl-dataset-summary-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 39%">
+<col style="width: 16%">
+<col style="width: 16%">
+<col style="width: 27%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Dataset</th>
+<th style="text-align: left;">Model Years</th>
+<th style="text-align: left;">Observations</th>
+<th style="text-align: left;">Primary Website Pages</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">EPA Automotive Trends (MY 2024 Detailed + 1975–2025 Summary)</td>
+<td style="text-align: left;">1975–2025 &amp; 2024</td>
+<td style="text-align: left;">2,386 (1,978 + 408)</td>
+<td style="text-align: left;">Automotive Trends, Car Explorer</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Original Cars MSRP Dataset (Raw Cleaned / Deduplicated MY 2001–2017)</td>
+<td style="text-align: left;">1990–2017 (2001–2017 MSRP)</td>
+<td style="text-align: left;">11,914 raw / 9,762 usable</td>
+<td style="text-align: left;">Home, Price &amp; Performance</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Trimslate Vehicle Specifications (Full / Recent MY 2022–2027)</td>
+<td style="text-align: left;">1984–2027 (2022–2027 Focus)</td>
+<td style="text-align: left;">52,130 total / 7,397 recent</td>
+<td style="text-align: left;">Car Explorer, Fuel Economy, Price &amp; Performance</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</figure>
+</div>
+</div>
+<hr>
 </section>
-<section id="author-repository" class="level2">
-<h2 class="anchored" data-anchor-id="author-repository">Author &amp; Repository</h2>
+</section>
+<section id="author-course-information" class="level2">
+<h2 class="anchored" data-anchor-id="author-course-information">Author &amp; Course Information</h2>
 <ul>
-<li><strong>GitHub Repository:</strong> <a href="https://github.com/mt-0708/Car-Explorer" class="uri">https://github.com/mt-0708/Car-Explorer</a></li>
+<li><strong>Author:</strong> Mayah Torres (<a href="https://github.com/mt-0708"><code>@mt-0708</code></a>)</li>
+<li><strong>Project GitHub Repository:</strong> <a href="https://github.com/mt-0708/Car-Explorer" class="uri">https://github.com/mt-0708/Car-Explorer</a></li>
+<li><strong>Course Background:</strong> Built as a data science final project following <a href="https://ppbds.github.io/primer/"><em>Preceptor’s Primer for Bayesian Data Science</em></a> using R, the tidyverse, Quarto, and GitHub Pages.</li>
 </ul>
+<hr>
 </section>
 <section id="data-sources-citations" class="level2">
 <h2 class="anchored" data-anchor-id="data-sources-citations">Data Sources &amp; Citations</h2>
 <ol type="1">
-<li><strong>U.S. Environmental Protection Agency (EPA)</strong> — <em>Automotive Trends Data</em>: <a href="https://www.epa.gov/automotive-trends/explore-automotive-trends-data" class="uri">https://www.epa.gov/automotive-trends/explore-automotive-trends-data</a></li>
-<li><strong>Original Cars MSRP Dataset</strong> — GitHub Gist (<code>dvinubius</code>): <a href="https://gist.github.com/dvinubius/33486dad2dc86319f0a06ffdb1d4f34f" class="uri">https://gist.github.com/dvinubius/33486dad2dc86319f0a06ffdb1d4f34f</a></li>
-<li><strong>Trimslate Vehicle Specifications</strong> — <a href="https://trimslate.com/data" class="uri">https://trimslate.com/data</a></li>
-<li><strong>CarAPI Vehicle Photographs</strong> — <a href="https://carapi.trustcar.info/" class="uri">https://carapi.trustcar.info/</a> (photographs matched with attribution and license metadata preserved)</li>
+<li><strong>U.S. Environmental Protection Agency (EPA)</strong> — <em>2025 EPA Automotive Trends Report: Explore Automotive Trends Data</em> (1975–2025 Summary Trends and Model Year 2024 Fuel Economy and Technology Data). U.S. Government work (Public Domain). Available at: <a href="https://www.epa.gov/automotive-trends/explore-automotive-trends-data" class="uri">https://www.epa.gov/automotive-trends/explore-automotive-trends-data</a></li>
+<li><strong>Trimslate</strong> — <em>The Trimslate Vehicle Specifications Dataset</em> (52,130 trims across model years 1984–2027, compiled from EPA FuelEconomy.gov, EPA Test Car List, and NHTSA records). Used under <strong>CC BY 4.0</strong> attribution requirements—credit to <a href="https://trimslate.com">Trimslate</a> (<a href="https://trimslate.com/data" class="uri">https://trimslate.com/data</a>).</li>
+<li><strong>Original Cars MSRP Dataset</strong> — Curated vehicle MSRP and engine specifications dataset (<code>cars_msrp_kaggle.csv</code>, originally compiled from Edmunds and Kaggle / Cooper Union). Hosted via GitHub Gist (<code>dvinubius</code>): <a href="https://gist.github.com/dvinubius/33486dad2dc86319f0a06ffdb1d4f34f" class="uri">https://gist.github.com/dvinubius/33486dad2dc86319f0a06ffdb1d4f34f</a></li>
 </ol>
+<hr>
+</section>
+<section id="vehicle-photograph-attribution-licenses" class="level2">
+<h2 class="anchored" data-anchor-id="vehicle-photograph-attribution-licenses">Vehicle Photograph Attribution &amp; Licenses</h2>
+<p>Because <code>carapi.trustcar.info</code> was unreachable in DNS at build time, matched recent vehicle photographs on the <strong><a href="./explorer.html">Car Explorer</a></strong> page were retrieved via <a href="scripts/download_images.R"><code>scripts/download_images.R</code></a> from <strong>Wikimedia Commons</strong> (the same Creative Commons image repository used by Trimslate). Full photographer and license credits for all <strong>15</strong> local images are preserved below:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>img_credits <span class="ot">&lt;-</span> img_df <span class="sc">|&gt;</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">transmute</span>(</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">Vehicle =</span> <span class="fu">paste</span>(make, model_prefix),</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">Local File</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">paste0</span>(<span class="st">"`"</span>, local_image, <span class="st">"`"</span>),</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">Photographer =</span> photographer,</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">License =</span> <span class="fu">paste0</span>(<span class="st">"["</span>, license, <span class="st">"]("</span>, license_url, <span class="st">")"</span>),</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">Source =</span> <span class="fu">paste0</span>(<span class="st">"[Wikimedia Commons]("</span>, source_url, <span class="st">")"</span>)</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(img_credits)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div id="tbl-image-credits" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl quarto-uncaptioned" id="tbl-image-credits-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;2
+</figcaption>
+<div aria-describedby="tbl-image-credits-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">Vehicle</th>
+<th style="text-align: left;">Local File</th>
+<th style="text-align: left;">Photographer</th>
+<th style="text-align: left;">License</th>
+<th style="text-align: left;">Source</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Toyota Camry</td>
+<td style="text-align: left;"><code>images/toyota_camry.jpg</code></td>
+<td style="text-align: left;">Ethan Llamas</td>
+<td style="text-align: left;"><a href="https://creativecommons.org/licenses/by-sa/4.0">CC BY-SA 4.0</a></td>
+<td style="text-align: left;"><a href="https://commons.wikimedia.org/wiki/File:Toyota_Camry_AXVH80_2.5_HEV_Platinum_White_Pearl_Mica_05.jpg">Wikimedia Commons</a></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Honda Civic</td>
+<td style="text-align: left;"><code>images/honda_civic.jpg</code></td>
+<td style="text-align: left;">Elise240SX</td>
+<td style="text-align: left;"><a href="https://creativecommons.org/licenses/by-sa/4.0">CC BY-SA 4.0</a></td>
+<td style="text-align: left;"><a href="https://commons.wikimedia.org/wiki/File:2022_Honda_Civic_Touring_in_Lunar_Silver_Metallic,_Front_Left,_05-10-2022.jpg">Wikimedia Commons</a></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Ford F150</td>
+<td style="text-align: left;"><code>images/ford_f150.jpg</code></td>
+<td style="text-align: left;">Kevauto</td>
+<td style="text-align: left;"><a href="https://creativecommons.org/licenses/by-sa/4.0">CC BY-SA 4.0</a></td>
+<td style="text-align: left;"><a href="https://commons.wikimedia.org/wiki/File:2021_Ford_F-150_SuperCrew,_front_4.28.21.jpg">Wikimedia Commons</a></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Chevrolet Corvette</td>
+<td style="text-align: left;"><code>images/chevrolet_corvette.jpg</code></td>
+<td style="text-align: left;">Alexander Migl</td>
+<td style="text-align: left;"><a href="https://creativecommons.org/licenses/by-sa/4.0">CC BY-SA 4.0</a></td>
+<td style="text-align: left;"><a href="https://commons.wikimedia.org/wiki/File:Chevrolet_Corvette_C8_IAA_2021_1X7A0156.jpg">Wikimedia Commons</a></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Tesla Model 3</td>
+<td style="text-align: left;"><code>images/tesla_model_3.jpg</code></td>
+<td style="text-align: left;">Alexander-93</td>
+<td style="text-align: left;"><a href="https://creativecommons.org/licenses/by-sa/4.0">CC BY-SA 4.0</a></td>
+<td style="text-align: left;"><a href="https://commons.wikimedia.org/wiki/File:Tesla_Model_3_(2023)_Autofr%C3%BChling_Ulm_IMG_9282.jpg">Wikimedia Commons</a></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Hyundai Ioniq 5</td>
+<td style="text-align: left;"><code>images/hyundai_ioniq_5.jpg</code></td>
+<td style="text-align: left;">© M 93</td>
+<td style="text-align: left;"><a href="https://creativecommons.org/licenses/by-sa/3.0/de/deed.en">CC BY-SA 3.0 de</a></td>
+<td style="text-align: left;"><a href="https://commons.wikimedia.org/wiki/File:Hyundai_Ioniq_5_AWD_Techniq-Paket_%E2%80%93_f_31122024.jpg">Wikimedia Commons</a></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Rivian R1S</td>
+<td style="text-align: left;"><code>images/rivian_r1s.jpg</code></td>
+<td style="text-align: left;">Kevauto</td>
+<td style="text-align: left;"><a href="https://creativecommons.org/licenses/by-sa/4.0">CC BY-SA 4.0</a></td>
+<td style="text-align: left;"><a href="https://commons.wikimedia.org/wiki/File:2023_Rivian_R1S_Adventure,_front_1.29.23.jpg">Wikimedia Commons</a></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Lucid Air</td>
+<td style="text-align: left;"><code>images/lucid_air.jpg</code></td>
+<td style="text-align: left;">Mr.choppers</td>
+<td style="text-align: left;"><a href="https://creativecommons.org/licenses/by-sa/3.0">CC BY-SA 3.0</a></td>
+<td style="text-align: left;"><a href="https://commons.wikimedia.org/wiki/File:2022_Lucid_Air_Grand_Touring_in_Zenith_Red,_front_left.jpg">Wikimedia Commons</a></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Porsche 911</td>
+<td style="text-align: left;"><code>images/porsche_911.jpg</code></td>
+<td style="text-align: left;">Alexander Migl</td>
+<td style="text-align: left;"><a href="https://creativecommons.org/licenses/by-sa/4.0">CC BY-SA 4.0</a></td>
+<td style="text-align: left;"><a href="https://commons.wikimedia.org/wiki/File:2025_Porsche_992_Carrera_convertible_DSC_7026.jpg">Wikimedia Commons</a></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Subaru Outback</td>
+<td style="text-align: left;"><code>images/subaru_outback.jpg</code></td>
+<td style="text-align: left;">MercurySable99</td>
+<td style="text-align: left;"><a href="https://creativecommons.org/licenses/by-sa/4.0">CC BY-SA 4.0</a></td>
+<td style="text-align: left;"><a href="https://commons.wikimedia.org/wiki/File:2026_Subaru_Outback_Wilderness,_front_left,_05-24-2026.jpg">Wikimedia Commons</a></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Toyota Prius</td>
+<td style="text-align: left;"><code>images/toyota_prius.jpg</code></td>
+<td style="text-align: left;">© M 93</td>
+<td style="text-align: left;"><a href="https://creativecommons.org/licenses/by-sa/3.0/de/deed.en">CC BY-SA 3.0 de</a></td>
+<td style="text-align: left;"><a href="https://commons.wikimedia.org/wiki/File:Toyota_Prius_2.0_HEV_Limited_(V)_%E2%80%93_f_18112022.jpg">Wikimedia Commons</a></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Mazda MX-5</td>
+<td style="text-align: left;"><code>images/mazda_mx_5.jpg</code></td>
+<td style="text-align: left;">Alexander-93</td>
+<td style="text-align: left;"><a href="https://creativecommons.org/licenses/by-sa/4.0">CC BY-SA 4.0</a></td>
+<td style="text-align: left;"><a href="https://commons.wikimedia.org/wiki/File:Mazda_MX-5_(ND)_1X7A7471.jpg">Wikimedia Commons</a></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Jeep Wrangler</td>
+<td style="text-align: left;"><code>images/jeep_wrangler.jpg</code></td>
+<td style="text-align: left;">Alexander Migl</td>
+<td style="text-align: left;"><a href="https://creativecommons.org/licenses/by-sa/4.0">CC BY-SA 4.0</a></td>
+<td style="text-align: left;"><a href="https://commons.wikimedia.org/wiki/File:Jeep_Wrangler_Unlimited_(JL)_PHEV_IMG_5808.jpg">Wikimedia Commons</a></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Kia EV9</td>
+<td style="text-align: left;"><code>images/kia_ev9.jpg</code></td>
+<td style="text-align: left;">Alexander-93</td>
+<td style="text-align: left;"><a href="https://creativecommons.org/licenses/by-sa/4.0">CC BY-SA 4.0</a></td>
+<td style="text-align: left;"><a href="https://commons.wikimedia.org/wiki/File:Kia_EV9_1X7A2472.jpg">Wikimedia Commons</a></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Alfa Romeo Tonale</td>
+<td style="text-align: left;"><code>images/alfa_romeo_tonale.jpg</code></td>
+<td style="text-align: left;">Matthias v.d. Elbe</td>
+<td style="text-align: left;"><a href="https://creativecommons.org/licenses/by/4.0">CC BY 4.0</a></td>
+<td style="text-align: left;"><a href="https://commons.wikimedia.org/wiki/File:2023-AR-Tonale-01_(bearb_Sp_2).jpg">Wikimedia Commons</a></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</figure>
+</div>
+</div>
 
 
 </section>
