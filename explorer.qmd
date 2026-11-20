@@ -1,6 +1,6 @@
 ---
 title: "Car Explorer"
-subtitle: "Browse featured 2024–2027 rides, spot high-power bargains, or filter all 7,397 recent trims"
+subtitle: "Browse featured 2024–2027 rides, spot high-power bargains, or search 28,248 models from 1984 to 2027"
 page-layout: full
 toc: false
 resources:
@@ -17,9 +17,10 @@ library(htmltools)
 library(scales)
 
 recent_df <- read_csv("data/processed/recent_vehicles_2022_2027.csv", show_col_types = FALSE)
+all_cars_df <- read_csv("data/processed/all_vehicles_explorer.csv", show_col_types = FALSE)
 img_df <- read_csv("data/processed/vehicle_images.csv", show_col_types = FALSE)
 
-n_recent <- nrow(recent_df)
+n_all_cars <- nrow(all_cars_df)
 sweet_df <- recent_df |>
   filter(!is.na(horsepower_combined), !is.na(annual_fuel_cost), !is.na(powertrain))
 n_sweet <- nrow(sweet_df)
@@ -200,26 +201,61 @@ ggplotly(p_sweet, tooltip = "text", height = 410) |>
 ```
 :::
 
-## Search All `r comma(n_recent)` Trims (MY 2022–2027)
+## Search All `r comma(n_all_cars)` Models (1984–2027)
+
+Sorted newest-first (`2027` down to `1984`)—type any classic or modern car in **Search**, drag the **Year** slider, or click a quick filter below.
 
 ```{=html}
+<div style="background:#f7f7f5; border:1px solid #deded9; border-left:5px solid #d90429; padding:0.75rem 1rem; margin:0.5rem 0 0.85rem; font-size:0.82rem;">
+  <div style="font-weight:800; color:#111111; text-transform:uppercase; letter-spacing:0.05em; font-size:0.76rem; margin-bottom:0.45rem;">Search Table Key</div>
+  <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(215px, 1fr)); gap:0.4rem 1rem; color:#242424;">
+    <div><span style="background:#111; color:#fff; font-weight:700; padding:0.1rem 0.42rem; border-radius:4px; font-size:0.73rem;">Style</span> Vehicle body shape (SUV, Pickup, Sedan…)</div>
+    <div><span style="background:#111; color:#fff; font-weight:700; padding:0.1rem 0.42rem; border-radius:4px; font-size:0.73rem;">Powertrain</span> Gas, Hybrid, Plug-in Hybrid, Diesel, or Electric</div>
+    <div><span style="background:#111; color:#fff; font-weight:700; padding:0.1rem 0.42rem; border-radius:4px; font-size:0.73rem;">HP</span> Certified engine or motor horsepower</div>
+    <div><span style="background:#111; color:#fff; font-weight:700; padding:0.1rem 0.42rem; border-radius:4px; font-size:0.73rem;">City / Hwy</span> MPG (fuel cars) or MPGe (electric cars)</div>
+    <div><span style="background:#d90429; color:#fff; font-weight:700; padding:0.1rem 0.42rem; border-radius:4px; font-size:0.73rem;">EV Mi</span> Single-charge driving range in miles (EVs)</div>
+    <div><span style="background:#111; color:#fff; font-weight:700; padding:0.1rem 0.42rem; border-radius:4px; font-size:0.73rem;">$/Yr</span> EPA estimated yearly fuel or electricity cost</div>
+    <div><span style="background:#111; color:#fff; font-weight:700; padding:0.1rem 0.42rem; border-radius:4px; font-size:0.73rem;">MSRP</span> Original new-car sticker price (when available)</div>
+  </div>
+</div>
+
 <div style="display:flex; flex-wrap:wrap; gap:0.45rem; align-items:center; margin:0.5rem 0 0.75rem;">
   <span style="font-size:0.85rem; font-weight:700; color:#111;">Quick Jump:</span>
-  <button type="button" class="btn btn-sm btn-primary" onclick="quickFilterCar('Electric')">⚡ Electric</button>
+  <button type="button" class="btn btn-sm btn-primary" onclick="quickFilterEra('202[2-7]')">🆕 2022–2027</button>
+  <button type="button" class="btn btn-sm btn-dark" onclick="quickFilterEra('199[0-9]')">🕰️ 1990s Classics</button>
+  <button type="button" class="btn btn-sm btn-dark" onclick="quickFilterEra('198[4-9]')">📼 1980s Icons</button>
+  <button type="button" class="btn btn-sm btn-dark" onclick="quickFilterCar('Electric')">⚡ Electric</button>
   <button type="button" class="btn btn-sm btn-dark" onclick="quickFilterCar('Hybrid')">🌱 Hybrid</button>
   <button type="button" class="btn btn-sm btn-dark" onclick="quickFilterCar('Porsche')">🏎️ Porsche</button>
-  <button type="button" class="btn btn-sm btn-dark" onclick="quickFilterCar('Lucid')">🔋 Lucid</button>
-  <button type="button" class="btn btn-sm btn-dark" onclick="quickFilterCar('Rivian')">🛻 Rivian</button>
   <button type="button" class="btn btn-sm btn-dark" onclick="quickFilterCar('Corvette')">🏁 Corvette</button>
-  <button type="button" class="btn btn-sm btn-outline-secondary" onclick="quickFilterCar('')">↺ Reset</button>
+  <button type="button" class="btn btn-sm btn-outline-secondary" onclick="resetCarFilters()">↺ All 1984–2027</button>
 </div>
 <script>
+function getCarTable() {
+  if (!window.jQuery || !jQuery.fn.DataTable) return null;
+  const tbl = jQuery('.datatables table.dataTable');
+  return tbl.length ? tbl.DataTable() : null;
+}
 function quickFilterCar(term) {
-  const input = document.querySelector('.dataTables_filter input');
-  if (input) {
-    input.value = term;
-    input.dispatchEvent(new Event('input', { bubbles: true }));
-    input.dispatchEvent(new Event('keyup', { bubbles: true }));
+  const dt = getCarTable();
+  if (dt) {
+    dt.columns().search('');
+    dt.search(term).draw();
+  }
+}
+function quickFilterEra(yearRegex) {
+  const dt = getCarTable();
+  if (dt) {
+    dt.search('');
+    dt.columns().search('');
+    dt.column(0).search(yearRegex, true, false).draw();
+  }
+}
+function resetCarFilters() {
+  const dt = getCarTable();
+  if (dt) {
+    dt.search('');
+    dt.columns().search('').draw();
   }
 }
 </script>
@@ -228,20 +264,19 @@ function quickFilterCar(term) {
 ```{r}
 #| label: tbl-car-explorer
 
-explorer_table <- recent_df |>
-  mutate(ev_range_only = if_else(powertrain == "Electric", electric_range, NA_real_)) |>
+explorer_table <- all_cars_df |>
   select(
     Year = year,
     Make = make,
     Model = model,
-    Trim = trim,
     Style = body_group,
     Powertrain = powertrain,
-    HP = horsepower_combined,
+    HP = horsepower,
     City = mpg_city,
     Hwy = mpg_highway,
-    `EV Mi` = ev_range_only,
-    `$/Yr` = annual_fuel_cost
+    `EV Mi` = ev_range,
+    `$/Yr` = annual_fuel_cost,
+    MSRP = msrp
   ) |>
   mutate(
     Make = as.factor(Make),
@@ -255,10 +290,11 @@ datatable(
   rownames = FALSE,
   options = list(
     pageLength = 12,
+    deferRender = TRUE,
     scrollX = TRUE,
     autoWidth = TRUE
   )
 ) |>
-  formatCurrency("$/Yr", currency = "$", digits = 0) |>
+  formatCurrency(c("$/Yr", "MSRP"), currency = "$", digits = 0) |>
   formatRound(c("HP", "City", "Hwy", "EV Mi"), digits = 0)
 ```
