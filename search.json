@@ -1,0 +1,86 @@
+[
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "What Makes a Car Worth Its Price?",
+    "section": "",
+    "text": "Code\nlibrary(tidyverse)\nlibrary(plotly)\nlibrary(scales)\n\nmsrp_df &lt;- read_csv(\"data/processed/msrp_merged.csv\", show_col_types = FALSE)\nrecent_df &lt;- read_csv(\"data/processed/recent_vehicles_2022_2027.csv\", show_col_types = FALSE)\ntrends_df &lt;- read_csv(\"data/processed/epa_trends_clean.csv\", show_col_types = FALSE)\n\nn_msrp &lt;- nrow(msrp_df)\nn_recent &lt;- nrow(recent_df)\nn_years_epa &lt;- n_distinct(trends_df$year)"
+  },
+  {
+    "objectID": "index.html#research-question",
+    "href": "index.html#research-question",
+    "title": "What Makes a Car Worth Its Price?",
+    "section": "Research Question",
+    "text": "Research Question\nHow do vehicle price, horsepower, fuel economy, and manufacturer relate to one another in recent vehicles?\nCombining manufacturer suggested retail prices (MSRP), Trimslate vehicle specifications (through model year 2027), and U.S. EPA certification and historical trend records (1975–2025), this website investigates what buyers gain in performance and efficiency as vehicle prices climb."
+  },
+  {
+    "objectID": "index.html#horsepower-vs.-msrp-by-vehicle-body-style",
+    "href": "index.html#horsepower-vs.-msrp-by-vehicle-body-style",
+    "title": "What Makes a Car Worth Its Price?",
+    "section": "Horsepower vs. MSRP by Vehicle Body Style",
+    "text": "Horsepower vs. MSRP by Vehicle Body Style\nAcross 9,762 actual vehicle observations, horsepower is one of the strongest predictors of sticker price (\\(r = 0.88\\) with \\(\\log_{10}(\\text{MSRP})\\)). We plot MSRP on a logarithmic dollar scale so mainstream $15,000–$60,000 sedans, SUVs, and pickups remain easy to compare alongside six- and seven-figure exotic coupes and convertibles.\nTip: Hover over any point to inspect its exact year, make, model, horsepower, MSRP, and MPG, or click body styles in the legend to isolate groups.\n\n\n\nCode\n# Prepare hover text for interactive exploration\nplot_df &lt;- msrp_df |&gt;\n  mutate(\n    hover_label = paste0(\n      \"&lt;b&gt;\", year, \" \", make, \" \", model, \"&lt;/b&gt;&lt;br&gt;\",\n      \"Body Style: \", body_style, \" (\", body_group, \")&lt;br&gt;\",\n      \"Horsepower: \", comma(horsepower), \" hp&lt;br&gt;\",\n      \"MSRP: \", dollar(msrp), \"&lt;br&gt;\",\n      \"Fuel Economy: \", mpg_city, \" city / \", mpg_highway, \" hwy MPG\"\n    )\n  )\n\np_home &lt;- ggplot(\n  plot_df,\n  aes(\n    x = horsepower,\n    y = msrp,\n    color = body_group,\n    text = hover_label\n  )\n) +\n  geom_point(alpha = 0.55, size = 1.7) +\n  scale_y_log10(\n    labels = label_dollar(),\n    breaks = c(10000, 25000, 50000, 100000, 250000, 500000, 1500000)\n  ) +\n  scale_x_continuous(labels = label_comma()) +\n  scale_color_brewer(palette = \"Dark2\") +\n  labs(\n    title = paste0(\"Vehicle Sticker Price Rises Steeply With Horsepower (N = \", comma(n_msrp), \" Vehicles)\"),\n    x = \"Engine Horsepower (HP)\",\n    y = \"Manufacturer Suggested Retail Price (MSRP, log scale)\",\n    color = \"Body Style\"\n  ) +\n  theme_minimal(base_size = 13)\n\nggplotly(p_home, tooltip = \"text\") |&gt;\n  layout(\n    legend = list(orientation = \"h\", y = -0.18),\n    margin = list(b = 90)\n  )\n\n\n\n\n\n\n\n\nFigure 1\n\n\n\n\n\n\nKey Takeaways & Data Filtering Notes\n\nExponential price scaling: Doubling horsepower from 150 HP to 300 HP moves typical vehicles from economy hatchbacks and compact sedans (~$18,000–$24,000) into mid-tier SUVs, pickups, and sport sedans (~$35,000–$50,000), while Coupes and Convertibles above 500 HP surge past $100,000.\nTransparent filtering (11,914 \\(\\rightarrow\\) 9,762 rows): Starting from the 11,914 raw rows in cars_msrp_kaggle.csv, we removed 715 exact duplicate rows, excluded 1,368 pre-2001 observations (which recorded $2,000 used trade-in estimates rather than original new-car MSRPs), and dropped 69 rows missing engine horsepower—leaving 9,762 verified new-vehicle observations.\nConnecting recent vehicles (2022–2027): Because Trimslate’s public CSV export omits MSRP values, all price graphics use verified msrp_merged.csv observations while our Car Explorer, Fuel Economy, and Automotive Trends tabs focus on 7,397 recent 2022–2027 vehicles and 1975–2025 EPA records."
+  },
+  {
+    "objectID": "index.html#explore-the-full-website",
+    "href": "index.html#explore-the-full-website",
+    "title": "What Makes a Car Worth Its Price?",
+    "section": "Explore the Full Website",
+    "text": "Explore the Full Website\n\n\nCar Explorer\nSearch and filter 2022–2027 vehicles by make, model, and body style with specifications and CarAPI photographs.\n\n\nPrice & Performance\nCompare manufacturer pricing tiers, horsepower-per-dollar value, and recent 2022–2027 horsepower benchmarks.\n\n\nFuel Economy\nCompare 2022–2027 city MPG, highway MPG, and electric vehicle driving range across powertrains.\n\n\nAutomotive Trends\nExplore 50 years of EPA trends (1975–2025) in MPG, horsepower, weight, and MY 2024 manufacturer fleets."
+  },
+  {
+    "objectID": "performance.html",
+    "href": "performance.html",
+    "title": "Price & Performance",
+    "section": "",
+    "text": "Code\nlibrary(tidyverse)\nlibrary(plotly)\n\n\nThis page will analyze relationships among horsepower, torque, manufacturer positioning, and MSRP using cleaned vehicle specification data."
+  },
+  {
+    "objectID": "about.html",
+    "href": "about.html",
+    "title": "About This Project",
+    "section": "",
+    "text": "What Makes a Car Worth Its Price? is a data science final project built with R, the tidyverse, Quarto, and GitHub Pages."
+  },
+  {
+    "objectID": "about.html#project-overview",
+    "href": "about.html#project-overview",
+    "title": "About This Project",
+    "section": "",
+    "text": "What Makes a Car Worth Its Price? is a data science final project built with R, the tidyverse, Quarto, and GitHub Pages."
+  },
+  {
+    "objectID": "about.html#author-repository",
+    "href": "about.html#author-repository",
+    "title": "About This Project",
+    "section": "Author & Repository",
+    "text": "Author & Repository\n\nGitHub Repository: https://github.com/mt-0708/Car-Explorer"
+  },
+  {
+    "objectID": "about.html#data-sources-citations",
+    "href": "about.html#data-sources-citations",
+    "title": "About This Project",
+    "section": "Data Sources & Citations",
+    "text": "Data Sources & Citations\n\nU.S. Environmental Protection Agency (EPA) — Automotive Trends Data: https://www.epa.gov/automotive-trends/explore-automotive-trends-data\nOriginal Cars MSRP Dataset — GitHub Gist (dvinubius): https://gist.github.com/dvinubius/33486dad2dc86319f0a06ffdb1d4f34f\nTrimslate Vehicle Specifications — https://trimslate.com/data\nCarAPI Vehicle Photographs — https://carapi.trustcar.info/ (photographs matched with attribution and license metadata preserved)"
+  },
+  {
+    "objectID": "trends.html",
+    "href": "trends.html",
+    "title": "Automotive Trends",
+    "section": "",
+    "text": "Code\nlibrary(tidyverse)\nlibrary(plotly)\n\n\nThis page will explore historical trends from the EPA Automotive Trends dataset across model years and manufacturers."
+  },
+  {
+    "objectID": "fuel.html",
+    "href": "fuel.html",
+    "title": "Fuel Economy",
+    "section": "",
+    "text": "Code\nlibrary(tidyverse)\nlibrary(plotly)\n\n\nThis page will compare city MPG, highway MPG, and electric range across recent internal-combustion, hybrid, and battery-electric vehicles."
+  },
+  {
+    "objectID": "explorer.html",
+    "href": "explorer.html",
+    "title": "Car Explorer",
+    "section": "",
+    "text": "Code\nlibrary(tidyverse)\nlibrary(DT)\n\n\nThis page will let visitors search and filter recent vehicles by manufacturer, model, year, and body style, alongside matched photographs and licensing attribution from CarAPI."
+  }
+]
