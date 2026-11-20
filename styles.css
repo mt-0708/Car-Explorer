@@ -1,48 +1,243 @@
-/* Custom styles for What Makes a Car Worth Its Price? */
+/* Red-and-black motorsport-inspired theme */
+
+:root {
+  --car-red: #d90429;
+  --car-red-bright: #ef233c;
+  --car-black: #111111;
+  --car-charcoal: #202020;
+  --car-paper: #f7f7f5;
+  --car-silver: #d8d8d4;
+}
 
 body {
+  color: #242424;
   line-height: 1.65;
+  background:
+    linear-gradient(rgba(17, 17, 17, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(17, 17, 17, 0.035) 1px, transparent 1px),
+    #fdfdfc;
+  background-size: 24px 24px;
+}
+
+a,
+.navbar-brand {
+  color: var(--car-red);
+}
+
+a:hover {
+  color: #a4001d;
+}
+
+.navbar {
+  border-bottom: 3px solid var(--car-red);
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.18);
+}
+
+.navbar-nav .nav-link {
+  position: relative;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.navbar-nav .nav-link.active,
+.navbar-nav .nav-link:hover {
+  color: #ffffff !important;
+}
+
+.navbar-nav .nav-link.active::after {
+  content: "";
+  position: absolute;
+  right: 0.75rem;
+  bottom: 0.35rem;
+  left: 0.75rem;
+  height: 3px;
+  border-radius: 3px;
+  background: var(--car-red-bright);
+}
+
+.quarto-title-block,
+.page-columns .content {
+  max-width: 1180px;
+}
+
+.quarto-title-block .title {
+  color: var(--car-black);
+  font-weight: 900;
+  letter-spacing: -0.035em;
+}
+
+.quarto-title-block .subtitle {
+  color: #555555;
+  font-weight: 600;
 }
 
 .hero-banner {
-  background: linear-gradient(135deg, #1b2838 0%, #2c3e50 100%);
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 85% 20%, rgba(239, 35, 60, 0.28), transparent 24%),
+    linear-gradient(135deg, #111111 0%, #292929 72%, #111111 100%);
   color: #ffffff;
-  padding: 2.25rem 2rem;
-  border-radius: 0.75rem;
+  padding: 2.5rem 2.25rem;
+  border: 1px solid #333333;
+  border-radius: 1rem;
   margin-bottom: 2rem;
+  box-shadow: 0 16px 38px rgba(17, 17, 17, 0.16);
+}
+
+.hero-banner::after {
+  content: "";
+  position: absolute;
+  right: -3.5rem;
+  bottom: -5.5rem;
+  width: 14rem;
+  height: 14rem;
+  border: 1.5rem solid rgba(217, 4, 41, 0.22);
+  border-radius: 50%;
+  transform: rotate(-12deg);
 }
 
 .hero-banner h1,
-.hero-banner h2 {
+.hero-banner h2,
+.hero-banner strong {
+  position: relative;
+  z-index: 1;
   color: #ffffff;
   margin-top: 0;
   border-bottom: none;
 }
 
+.hero-banner h2 {
+  display: inline-block;
+  padding: 0.15rem 0.7rem;
+  margin-bottom: 0.9rem;
+  border-left: 5px solid var(--car-red-bright);
+  background: rgba(239, 35, 60, 0.12);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.hero-banner p {
+  position: relative;
+  z-index: 1;
+  max-width: 60rem;
+}
+
 .stat-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 1.1rem;
   margin: 1.5rem 0;
 }
 
 .stat-card {
-  background: #f8f9fa;
-  border: 1px solid #e2e8f0;
-  border-left: 4px solid #2780e3;
-  border-radius: 0.5rem;
-  padding: 1rem 1.25rem;
+  position: relative;
+  overflow: hidden;
+  background: #ffffff;
+  border: 1px solid #deded9;
+  border-top: 5px solid var(--car-red);
+  border-radius: 0.8rem;
+  padding: 1.15rem 1.25rem;
+  box-shadow: 0 8px 24px rgba(17, 17, 17, 0.08);
+  transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+}
+
+.stat-card::after {
+  content: "";
+  position: absolute;
+  right: -1.5rem;
+  bottom: -2rem;
+  width: 5rem;
+  height: 5rem;
+  border-radius: 50%;
+  background: rgba(217, 4, 41, 0.06);
+}
+
+.stat-card:hover {
+  transform: translateY(-5px);
+  border-color: #c8c8c2;
+  box-shadow: 0 14px 30px rgba(17, 17, 17, 0.14);
 }
 
 .stat-card h3 {
   margin-top: 0;
+  color: var(--car-black);
   font-size: 1.05rem;
+  font-weight: 850;
 }
 
-.plot-container {
+.stat-card h3 a {
+  text-decoration: none;
+}
+
+.stat-card h3 a::after {
+  content: "  →";
+  color: var(--car-red);
+}
+
+.plot-container,
+.dataTables_wrapper,
+.datatables {
   background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 0.5rem;
+  border: 1px solid #deded9;
+  border-radius: 0.8rem;
   padding: 1rem;
   margin: 1.25rem 0;
+  box-shadow: 0 8px 24px rgba(17, 17, 17, 0.07);
+}
+
+.plotly {
+  border-radius: 0.55rem;
+}
+
+pre,
+div.sourceCode {
+  border: 1px solid #ddddda;
+  border-left: 4px solid var(--car-red);
+  border-radius: 0.55rem;
+  background: #f5f5f2;
+}
+
+blockquote {
+  border-left-color: var(--car-red);
+}
+
+.btn,
+.form-control,
+.form-select {
+  border-radius: 999px;
+}
+
+.btn-primary {
+  background: var(--car-red);
+  border-color: var(--car-red);
+}
+
+.btn-primary:hover {
+  background: #a4001d;
+  border-color: #a4001d;
+}
+
+table {
+  border-collapse: separate;
+  border-spacing: 0;
+  overflow: hidden;
+  border: 1px solid #deded9;
+  border-radius: 0.55rem;
+}
+
+table thead th {
+  background: var(--car-black) !important;
+  color: #ffffff !important;
+  border-bottom: 3px solid var(--car-red) !important;
+}
+
+@media (max-width: 768px) {
+  .hero-banner {
+    padding: 1.75rem 1.25rem;
+  }
+
+  .stat-grid {
+    grid-template-columns: 1fr;
+  }
 }

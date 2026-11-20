@@ -81,7 +81,16 @@ p_home <- ggplot(
     breaks = c(10000, 25000, 50000, 100000, 250000, 500000, 1500000)
   ) +
   scale_x_continuous(labels = label_comma()) +
-  scale_color_brewer(palette = "Dark2") +
+  scale_color_manual(values = c(
+    "Coupe" = "#d90429",
+    "Convertible" = "#ef233c",
+    "Sedan" = "#9e1b32",
+    "Hatchback" = "#ff5964",
+    "Wagon" = "#6d6d6d",
+    "SUV" = "#111111",
+    "Van / Minivan" = "#4a4a4a",
+    "Pickup" = "#262626"
+  )) +
   labs(
     title = paste0("Vehicle Sticker Price Rises Steeply With Horsepower (N = ", comma(n_msrp), " Vehicles)"),
     x = "Engine Horsepower (HP)",
