@@ -1,0 +1,12 @@
+---
+title: "Fuel Economy"
+subtitle: "Comparing city MPG, highway MPG, and electric vehicle range"
+---
+
+```{r}
+#| label: setup
+library(tidyverse)
+library(plotly)
+```
+
+This page will compare city MPG, highway MPG, and electric range across recent internal-combustion, hybrid, and battery-electric vehicles.

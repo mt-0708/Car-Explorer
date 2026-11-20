@@ -1,0 +1,15 @@
+{
+  "hash": "856f9829c2adda70ab4a960eac4c897a",
+  "result": {
+    "engine": "knitr",
+    "markdown": "---\ntitle: \"Fuel Economy\"\nsubtitle: \"Comparing city MPG, highway MPG, and electric vehicle range\"\n---\n\n\n::: {.cell}\n\n```{.r .cell-code}\nlibrary(tidyverse)\nlibrary(plotly)\n```\n:::\n\n\nThis page will compare city MPG, highway MPG, and electric range across recent internal-combustion, hybrid, and battery-electric vehicles.\n",
+    "supporting": [],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {},
+    "engineDependencies": {},
+    "preserve": {},
+    "postProcess": true
+  }
+}

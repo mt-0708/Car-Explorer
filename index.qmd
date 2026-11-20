@@ -1,0 +1,129 @@
+---
+title: "What Makes a Car Worth Its Price?"
+subtitle: "Exploring Price, Horsepower, Fuel Economy, and Manufacturer Trends"
+---
+
+```{r}
+#| label: setup
+library(tidyverse)
+library(plotly)
+library(scales)
+
+msrp_df <- read_csv("data/processed/msrp_merged.csv", show_col_types = FALSE)
+recent_df <- read_csv("data/processed/recent_vehicles_2022_2027.csv", show_col_types = FALSE)
+trends_df <- read_csv("data/processed/epa_trends_clean.csv", show_col_types = FALSE)
+
+n_msrp <- nrow(msrp_df)
+n_recent <- nrow(recent_df)
+n_years_epa <- n_distinct(trends_df$year)
+```
+
+::: {.hero-banner}
+## Research Question
+
+**How do vehicle price, horsepower, fuel economy, and manufacturer relate to one another in recent vehicles?**
+
+Combining manufacturer suggested retail prices (MSRP), Trimslate vehicle specifications (through model year 2027), and U.S. EPA certification and historical trend records (1975–2025), this website investigates what buyers gain in performance and efficiency as vehicle prices climb.
+:::
+
+::: {.stat-grid}
+::: {.stat-card}
+### `r comma(n_msrp)` Vehicles
+Deduplicated new-vehicle MSRP & horsepower records (`msrp_merged.csv`, MY 2001–2017).
+:::
+
+::: {.stat-card}
+### `r comma(n_recent)` Recent Trims
+Model year **2022–2027** vehicles across **`r n_distinct(recent_df$make)`** makes from Trimslate & EPA (`recent_vehicles_2022_2027.csv`).
+:::
+
+::: {.stat-card}
+### `r n_years_epa` Model Years
+Historical EPA fleet trends (**1975–2025**) tracking MPG, horsepower, and vehicle weight.
+:::
+:::
+
+## Horsepower vs. MSRP by Vehicle Body Style
+
+Across **`r comma(n_msrp)` actual vehicle observations**, horsepower is one of the strongest predictors of sticker price ($r = `r round(cor(msrp_df$horsepower, log10(msrp_df$msrp)), 2)`$ with $\log_{10}(\text{MSRP})$). We plot MSRP on a logarithmic dollar scale so mainstream `$15,000–$60,000` sedans, SUVs, and pickups remain easy to compare alongside six- and seven-figure exotic coupes and convertibles.
+
+*Tip: Hover over any point to inspect its exact year, make, model, horsepower, MSRP, and MPG, or click body styles in the legend to isolate groups.*
+
+::: {.plot-container}
+```{r}
+#| label: fig-hp-msrp
+#| fig-height: 6
+
+# Prepare hover text for interactive exploration
+plot_df <- msrp_df |>
+  mutate(
+    hover_label = paste0(
+      "<b>", year, " ", make, " ", model, "</b><br>",
+      "Body Style: ", body_style, " (", body_group, ")<br>",
+      "Horsepower: ", comma(horsepower), " hp<br>",
+      "MSRP: ", dollar(msrp), "<br>",
+      "Fuel Economy: ", mpg_city, " city / ", mpg_highway, " hwy MPG"
+    )
+  )
+
+p_home <- ggplot(
+  plot_df,
+  aes(
+    x = horsepower,
+    y = msrp,
+    color = body_group,
+    text = hover_label
+  )
+) +
+  geom_point(alpha = 0.55, size = 1.7) +
+  scale_y_log10(
+    labels = label_dollar(),
+    breaks = c(10000, 25000, 50000, 100000, 250000, 500000, 1500000)
+  ) +
+  scale_x_continuous(labels = label_comma()) +
+  scale_color_brewer(palette = "Dark2") +
+  labs(
+    title = paste0("Vehicle Sticker Price Rises Steeply With Horsepower (N = ", comma(n_msrp), " Vehicles)"),
+    x = "Engine Horsepower (HP)",
+    y = "Manufacturer Suggested Retail Price (MSRP, log scale)",
+    color = "Body Style"
+  ) +
+  theme_minimal(base_size = 13)
+
+ggplotly(p_home, tooltip = "text") |>
+  layout(
+    legend = list(orientation = "h", y = -0.18),
+    margin = list(b = 90)
+  )
+```
+:::
+
+### Key Takeaways & Data Filtering Notes
+
+- **Exponential price scaling:** Doubling horsepower from 150 HP to 300 HP moves typical vehicles from economy hatchbacks and compact sedans (`~$18,000–$24,000`) into mid-tier SUVs, pickups, and sport sedans (`~$35,000–$50,000`), while Coupes and Convertibles above 500 HP surge past `$100,000`.
+- **Transparent filtering (`11,914` $\rightarrow$ ``r comma(n_msrp)`` rows):** Starting from the `11,914` raw rows in `cars_msrp_kaggle.csv`, we removed `715` exact duplicate rows, excluded `1,368` pre-2001 observations (which recorded `$2,000` used trade-in estimates rather than original new-car MSRPs), and dropped `69` rows missing engine horsepower—leaving **`r comma(n_msrp)`** verified new-vehicle observations.
+- **Connecting recent vehicles (2022–2027):** Because Trimslate's public CSV export omits MSRP values, all price graphics use verified `msrp_merged.csv` observations while our **[Car Explorer](explorer.qmd)**, **[Fuel Economy](fuel.qmd)**, and **[Automotive Trends](trends.qmd)** tabs focus on **`r comma(n_recent)`** recent **2022–2027** vehicles and **1975–2025** EPA records.
+
+## Explore the Full Website
+
+::: {.stat-grid}
+::: {.stat-card}
+### [Car Explorer](explorer.qmd)
+Search and filter **2022–2027** vehicles by make, model, and body style with specifications and CarAPI photographs.
+:::
+
+::: {.stat-card}
+### [Price & Performance](performance.qmd)
+Compare manufacturer pricing tiers, horsepower-per-dollar value, and recent **2022–2027** horsepower benchmarks.
+:::
+
+::: {.stat-card}
+### [Fuel Economy](fuel.qmd)
+Compare **2022–2027** city MPG, highway MPG, and electric vehicle driving range across powertrains.
+:::
+
+::: {.stat-card}
+### [Automotive Trends](trends.qmd)
+Explore 50 years of EPA trends (**1975–2025**) in MPG, horsepower, weight, and MY 2024 manufacturer fleets.
+:::
+:::

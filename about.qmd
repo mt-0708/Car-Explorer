@@ -1,0 +1,18 @@
+---
+title: "About This Project"
+---
+
+## Project Overview
+
+**What Makes a Car Worth Its Price?** is a data science final project built with R, the tidyverse, Quarto, and GitHub Pages.
+
+## Author & Repository
+
+- **GitHub Repository:** <https://github.com/mt-0708/Car-Explorer>
+
+## Data Sources & Citations
+
+1. **U.S. Environmental Protection Agency (EPA)** — *Automotive Trends Data*: <https://www.epa.gov/automotive-trends/explore-automotive-trends-data>
+2. **Original Cars MSRP Dataset** — GitHub Gist (`dvinubius`): <https://gist.github.com/dvinubius/33486dad2dc86319f0a06ffdb1d4f34f>
+3. **Trimslate Vehicle Specifications** — <https://trimslate.com/data>
+4. **CarAPI Vehicle Photographs** — <https://carapi.trustcar.info/> (photographs matched with attribution and license metadata preserved)

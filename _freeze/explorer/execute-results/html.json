@@ -1,0 +1,15 @@
+{
+  "hash": "426082a6ee4177c22337fdb54a8b30d6",
+  "result": {
+    "engine": "knitr",
+    "markdown": "---\ntitle: \"Car Explorer\"\nsubtitle: \"Search and filter recent vehicles, specifications, and photographs\"\n---\n\n\n::: {.cell}\n\n```{.r .cell-code}\nlibrary(tidyverse)\nlibrary(DT)\n```\n:::\n\n\nThis page will let visitors search and filter recent vehicles by manufacturer, model, year, and body style, alongside matched photographs and licensing attribution from CarAPI.\n",
+    "supporting": [],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {},
+    "engineDependencies": {},
+    "preserve": {},
+    "postProcess": true
+  }
+}

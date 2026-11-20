@@ -1,0 +1,15 @@
+{
+  "hash": "1eb0aad803ad82a4029d8cef63798002",
+  "result": {
+    "engine": "knitr",
+    "markdown": "---\ntitle: \"Automotive Trends\"\nsubtitle: \"Historical EPA trends in fuel economy, horsepower, and emissions\"\n---\n\n\n::: {.cell}\n\n```{.r .cell-code}\nlibrary(tidyverse)\nlibrary(plotly)\n```\n:::\n\n\nThis page will explore historical trends from the EPA Automotive Trends dataset across model years and manufacturers.\n",
+    "supporting": [],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {},
+    "engineDependencies": {},
+    "preserve": {},
+    "postProcess": true
+  }
+}

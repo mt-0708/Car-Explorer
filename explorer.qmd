@@ -1,0 +1,12 @@
+---
+title: "Car Explorer"
+subtitle: "Search and filter recent vehicles, specifications, and photographs"
+---
+
+```{r}
+#| label: setup
+library(tidyverse)
+library(DT)
+```
+
+This page will let visitors search and filter recent vehicles by manufacturer, model, year, and body style, alongside matched photographs and licensing attribution from CarAPI.

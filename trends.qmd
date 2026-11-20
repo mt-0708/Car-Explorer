@@ -1,0 +1,12 @@
+---
+title: "Automotive Trends"
+subtitle: "Historical EPA trends in fuel economy, horsepower, and emissions"
+---
+
+```{r}
+#| label: setup
+library(tidyverse)
+library(plotly)
+```
+
+This page will explore historical trends from the EPA Automotive Trends dataset across model years and manufacturers.

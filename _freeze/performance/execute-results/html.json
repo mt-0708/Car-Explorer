@@ -1,0 +1,15 @@
+{
+  "hash": "342ea53f6a381f05427d1d53efa5072a",
+  "result": {
+    "engine": "knitr",
+    "markdown": "---\ntitle: \"Price & Performance\"\nsubtitle: \"How horsepower, torque, and manufacturer relate to MSRP\"\n---\n\n\n::: {.cell}\n\n```{.r .cell-code}\nlibrary(tidyverse)\nlibrary(plotly)\n```\n:::\n\n\nThis page will analyze relationships among horsepower, torque, manufacturer positioning, and MSRP using cleaned vehicle specification data.\n",
+    "supporting": [],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {},
+    "engineDependencies": {},
+    "preserve": {},
+    "postProcess": true
+  }
+}

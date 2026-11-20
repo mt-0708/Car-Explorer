@@ -1,0 +1,12 @@
+---
+title: "Price & Performance"
+subtitle: "How horsepower, torque, and manufacturer relate to MSRP"
+---
+
+```{r}
+#| label: setup
+library(tidyverse)
+library(plotly)
+```
+
+This page will analyze relationships among horsepower, torque, manufacturer positioning, and MSRP using cleaned vehicle specification data.
