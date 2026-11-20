@@ -26,41 +26,6 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-/* CSS for syntax highlighting */
-html { -webkit-text-size-adjust: 100%; }
-pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
-pre > code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode > span { color: inherit; text-decoration: inherit; }
-div.sourceCode { margin: 1em 0; }
-pre.sourceCode { margin: 0; }
-@media screen {
-div.sourceCode { overflow: auto; }
-}
-@media print {
-pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
-}
-pre.numberSource code
-  { counter-reset: source-line 0; }
-pre.numberSource code > span
-  { position: relative; left: -4em; counter-increment: source-line; }
-pre.numberSource code > span > a:first-child::before
-  { content: counter(source-line);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; display: inline-block;
-    -webkit-touch-callout: none; -webkit-user-select: none;
-    -khtml-user-select: none; -moz-user-select: none;
-    -ms-user-select: none; user-select: none;
-    padding: 0 4px; width: 4em;
-  }
-pre.numberSource { margin-left: 3em;  padding-left: 4px; }
-div.sourceCode
-  {   }
-@media screen {
-pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
-}
 </style>
 
 
@@ -80,7 +45,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-bf27225e3a48a9273f3daa8f8e829971.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-f6292108684b128ebd383b60bfb7e163.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-acc4ea98d105bd36d41ea6088d124fd6.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -170,10 +135,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#project-summary" id="toc-project-summary" class="nav-link active" data-scroll-target="#project-summary">Project Summary</a>
-  <ul class="collapse">
-  <li><a href="#reproducible-r-quarto-pipeline" id="toc-reproducible-r-quarto-pipeline" class="nav-link" data-scroll-target="#reproducible-r-quarto-pipeline">Reproducible R &amp; Quarto Pipeline</a></li>
-  </ul></li>
+  <li><a href="#project-summary" id="toc-project-summary" class="nav-link active" data-scroll-target="#project-summary">Project Summary</a></li>
   <li><a href="#author-course-information" id="toc-author-course-information" class="nav-link" data-scroll-target="#author-course-information">Author &amp; Course Information</a></li>
   <li><a href="#data-sources-citations" id="toc-data-sources-citations" class="nav-link" data-scroll-target="#data-sources-citations">Data Sources &amp; Citations</a></li>
   <li><a href="#vehicle-photograph-attribution-licenses" id="toc-vehicle-photograph-attribution-licenses" class="nav-link" data-scroll-target="#vehicle-photograph-attribution-licenses">Vehicle Photograph Attribution &amp; Licenses</a></li>
@@ -186,7 +148,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
 <h1 class="title">About This Project</h1>
-<p class="subtitle lead">Author information, reproducible data pipeline, and dataset &amp; image citations</p>
+<p class="subtitle lead">Author information and dataset &amp; image citations</p>
 </div>
 
 
@@ -203,61 +165,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<div class="cell">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(knitr)</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(scales)</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>epa24 <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"data/processed/epa_clean.csv"</span>, <span class="at">show_col_types =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>epa_trends <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"data/processed/epa_trends_clean.csv"</span>, <span class="at">show_col_types =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>msrp_clean <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"data/processed/msrp_clean.csv"</span>, <span class="at">show_col_types =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>msrp_merged <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"data/processed/msrp_merged.csv"</span>, <span class="at">show_col_types =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>ts_clean <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"data/processed/trimslate_clean.csv"</span>, <span class="at">show_col_types =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>recent_df <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"data/processed/recent_vehicles_2022_2027.csv"</span>, <span class="at">show_col_types =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>img_df <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"data/processed/vehicle_images.csv"</span>, <span class="at">show_col_types =</span> <span class="cn">FALSE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
-</div>
 <section id="project-summary" class="level2">
 <h2 class="anchored" data-anchor-id="project-summary">Project Summary</h2>
 <p><strong>What Makes a Car Worth Its Price?</strong> investigates how vehicle sticker price (MSRP), engine horsepower, fuel economy, electric driving range, and manufacturer positioning relate to one another—combining verified MSRP benchmarks with recent <strong>2022–2027</strong> vehicle specifications and <strong>50 years (1975–2025)</strong> of U.S. EPA fleet trends.</p>
-<section id="reproducible-r-quarto-pipeline" class="level3">
-<h3 class="anchored" data-anchor-id="reproducible-r-quarto-pipeline">Reproducible R &amp; Quarto Pipeline</h3>
-<p>All data downloading, cleaning, deduplication, and visualization steps are scripted in R using the <code>tidyverse</code>, <code>ggplot2</code>, <code>plotly</code>, and <code>DT</code>:</p>
-<ol type="1">
-<li><strong>Download raw sources (<code>data/raw/</code>):</strong> <code>scripts/download_epa.R</code>, <code>scripts/download_msrp.R</code>, <code>scripts/download_trimslate.R</code>, and <code>scripts/download_images.R</code>.</li>
-<li><strong>Clean individual tables (<code>data/processed/</code>):</strong> <code>scripts/clean_datasets.R</code> standardizes column names, converts string placeholders (<code>"N/A"</code>, <code>"UNKNOWN"</code>, <code>"-"</code>) to <code>NA</code>, and preserves untouched raw files.</li>
-<li><strong>Connect without duplication:</strong> <code>scripts/merge_datasets.R</code> summarizes lookup tables to one row per <code>(year, make, model)</code> prior to <code>left_join(..., relationship = "many-to-one")</code> so zero observations are duplicated.</li>
-</ol>
 <div class="cell">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>dataset_overview <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">Dataset =</span> <span class="fu">c</span>(</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"EPA Automotive Trends (MY 2024 Detailed + 1975–2025 Summary)"</span>,</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Original Cars MSRP Dataset (Raw Cleaned / Deduplicated MY 2001–2017)"</span>,</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Trimslate Vehicle Specifications (Full / Recent MY 2022–2027)"</span></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  ),</span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">Model Years</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">c</span>(</span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">"1975–2025 &amp; 2024"</span>,</span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">"1990–2017 (2001–2017 MSRP)"</span>,</span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>    <span class="st">"1984–2027 (2022–2027 Focus)"</span></span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>  ),</span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">Observations</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">c</span>(</span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">paste0</span>(<span class="fu">comma</span>(<span class="fu">nrow</span>(epa24) <span class="sc">+</span> <span class="fu">nrow</span>(epa_trends)), <span class="st">" ("</span>, <span class="fu">comma</span>(<span class="fu">nrow</span>(epa24)), <span class="st">" + "</span>, <span class="fu">nrow</span>(epa_trends), <span class="st">")"</span>),</span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>    <span class="fu">paste0</span>(<span class="fu">comma</span>(<span class="fu">nrow</span>(msrp_clean)), <span class="st">" raw / "</span>, <span class="fu">comma</span>(<span class="fu">nrow</span>(msrp_merged)), <span class="st">" usable"</span>),</span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>    <span class="fu">paste0</span>(<span class="fu">comma</span>(<span class="fu">nrow</span>(ts_clean)), <span class="st">" total / "</span>, <span class="fu">comma</span>(<span class="fu">nrow</span>(recent_df)), <span class="st">" recent"</span>)</span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>  ),</span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">Primary Website Pages</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">c</span>(</span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Automotive Trends, Car Explorer"</span>,</span>
-<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Home, Price &amp; Performance"</span>,</span>
-<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Car Explorer, Fuel Economy, Price &amp; Performance"</span></span>
-<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(dataset_overview)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 <div id="tbl-dataset-summary" class="cell quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl quarto-uncaptioned" id="tbl-dataset-summary-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -308,7 +219,6 @@ Table&nbsp;1
 </div>
 <hr>
 </section>
-</section>
 <section id="author-course-information" class="level2">
 <h2 class="anchored" data-anchor-id="author-course-information">Author &amp; Course Information</h2>
 <ul>
@@ -331,19 +241,6 @@ Table&nbsp;1
 <h2 class="anchored" data-anchor-id="vehicle-photograph-attribution-licenses">Vehicle Photograph Attribution &amp; Licenses</h2>
 <p>Because <code>carapi.trustcar.info</code> was unreachable in DNS at build time, matched recent vehicle photographs on the <strong><a href="./explorer.html">Car Explorer</a></strong> page were retrieved via <a href="scripts/download_images.R"><code>scripts/download_images.R</code></a> from <strong>Wikimedia Commons</strong> (the same Creative Commons image repository used by Trimslate). Full photographer and license credits for all <strong>15</strong> local images are preserved below:</p>
 <div class="cell">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>img_credits <span class="ot">&lt;-</span> img_df <span class="sc">|&gt;</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">transmute</span>(</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">Vehicle =</span> <span class="fu">paste</span>(make, model_prefix),</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">Local File</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">paste0</span>(<span class="st">"`"</span>, local_image, <span class="st">"`"</span>),</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">Photographer =</span> photographer,</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">License =</span> <span class="fu">paste0</span>(<span class="st">"["</span>, license, <span class="st">"]("</span>, license_url, <span class="st">")"</span>),</span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">Source =</span> <span class="fu">paste0</span>(<span class="st">"[Wikimedia Commons]("</span>, source_url, <span class="st">")"</span>)</span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(img_credits)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 <div id="tbl-image-credits" class="cell quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl quarto-uncaptioned" id="tbl-image-credits-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -880,6 +777,25 @@ Table&nbsp;2
   });
   </script>
 </div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+<div class="car-parade-footer" aria-hidden="true">
+<p><svg viewbox="0 0 180 56" class="footer-car"><path d="M12 40h12l12-16q4-5 11-6l26-3 18-11q5-3 12-3h28q8 0 13 5l14 15 16 5q6 2 8 8l2 6h-12a12 12 0 0 0-24 0H56a12 12 0 0 0-24 0H12z" fill="none" stroke="#ef233c" stroke-width="2.5"></path><circle cx="44" cy="40" r="8" fill="#111" stroke="#fff" stroke-width="2.2"></circle><circle cx="150" cy="40" r="8" fill="#111" stroke="#fff" stroke-width="2.2"></circle></svg> <svg viewbox="0 0 180 56" class="footer-car"><path d="M10 40h10l9-15q3-6 10-7l16-3v-9q0-5 6-5h56q6 0 10 5l12 14 22 2q10 1 14 9l5 9h-12a12 12 0 0 0-24 0H54a12 12 0 0 0-24 0H10z" fill="none" stroke="#ffffff" stroke-width="2.3"></path><circle cx="42" cy="40" r="8" fill="#111" stroke="#ef233c" stroke-width="2.2"></circle><circle cx="152" cy="40" r="8" fill="#111" stroke="#ef233c" stroke-width="2.2"></circle></svg> <svg viewbox="0 0 180 56" class="footer-car"><path d="M10 40h11l6-12q3-5 9-5h22l12-14q4-5 11-5h34q6 0 9 5l8 14h28q7 0 10 6l4 11h-12a12 12 0 0 0-24 0H54a12 12 0 0 0-24 0H10z" fill="none" stroke="#ef233c" stroke-width="2.5"></path><circle cx="42" cy="40" r="8" fill="#111" stroke="#fff" stroke-width="2.2"></circle><circle cx="150" cy="40" r="8" fill="#111" stroke="#fff" stroke-width="2.2"></circle></svg></p>
+</div>
+<div class="footer-road-line">
+
+</div>
+<p><span style="font-size:0.82rem; color:#d8d8d4;">What Makes a Car Worth Its Price? · Built with R, Quarto &amp; Tidyverse</span></p>
+</div>
+    <div class="nav-footer-right">
+      &nbsp;
+    </div>
+  </div>
+</footer>
 
 
 

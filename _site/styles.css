@@ -15,8 +15,33 @@ body {
   background: #ffffff;
 }
 
-a,
 .navbar-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  color: #ffffff !important;
+  font-weight: 900;
+  font-size: 1.2rem;
+  letter-spacing: -0.02em;
+}
+
+.navbar-brand::before {
+  content: "";
+  display: inline-block;
+  width: 2.35rem;
+  height: 1.05rem;
+  flex-shrink: 0;
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 48'%3E%3Cpath d='M6 34h9l9-13q3-4 9-5l19-3 14-9q4-2 9-2h20q6 0 9 4l10 11 11 3q5 2 6 6l1 8h-9a9 9 0 0 0-18 0H39a9 9 0 0 0-18 0H6z' fill='%23ef233c' stroke='%23ffffff' stroke-width='2.2' stroke-linejoin='round'/%3E%3Ccircle cx='30' cy='34' r='6.5' fill='%23111111' stroke='%23ffffff' stroke-width='2.2'/%3E%3Ccircle cx='98' cy='34' r='6.5' fill='%23111111' stroke='%23ffffff' stroke-width='2.2'/%3E%3C/svg%3E");
+}
+
+.navbar-brand:hover {
+  color: var(--car-red-bright) !important;
+}
+
+a {
   color: var(--car-red);
 }
 
@@ -56,15 +81,131 @@ a:hover {
   max-width: 1180px;
 }
 
+#title-block-header.quarto-title-block {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, #111111 0%, #1a1a1a 83%, #d90429 83%, #d90429 89%, #111111 89%);
+  color: #ffffff;
+  padding: 2rem 14rem 2rem 2.25rem;
+  margin-bottom: 2rem;
+  border-left: 7px solid var(--car-red-bright);
+  border-bottom: 3px solid var(--car-red);
+  clip-path: polygon(0 0, calc(100% - 24px) 0, 100% 24px, 100% 100%, 0 100%);
+  box-shadow: 0 14px 34px rgba(17, 17, 17, 0.16);
+}
+
+#title-block-header.quarto-title-block::after {
+  content: "";
+  position: absolute;
+  right: 1.6rem;
+  bottom: 0.85rem;
+  width: 12.5rem;
+  height: 4.8rem;
+  pointer-events: none;
+  opacity: 0.92;
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: right bottom;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 340 120'%3E%3Cline x1='4' y1='42' x2='58' y2='42' stroke='%23ef233c' stroke-width='3' stroke-linecap='round' opacity='0.75'/%3E%3Cline x1='18' y1='58' x2='52' y2='58' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' opacity='0.45'/%3E%3Cpath d='M52 84h18l17-28q5-8 16-10l42-6 30-21q7-5 18-5h46q11 0 19 8l24 27 32 9q12 4 16 15l3 11h-19a21 21 0 0 0-42 0H126a21 21 0 0 0-42 0H52z' fill='rgba(17,17,17,0.75)' stroke='%23ffffff' stroke-width='3.2' stroke-linejoin='round'/%3E%3Cpath d='m108 46 42-6 27-19h34v25H96m118-25h18q9 0 16 8l15 17h-49' fill='none' stroke='%23ef233c' stroke-width='2.6' stroke-linejoin='round'/%3E%3Ccircle cx='105' cy='84' r='15' fill='%23111111' stroke='%23ffffff' stroke-width='3.5'/%3E%3Ccircle cx='293' cy='84' r='15' fill='%23111111' stroke='%23ffffff' stroke-width='3.5'/%3E%3Ccircle cx='105' cy='84' r='5' fill='%23ef233c'/%3E%3Ccircle cx='293' cy='84' r='5' fill='%23ef233c'/%3E%3C/svg%3E");
+}
+
 .quarto-title-block .title {
-  color: var(--car-black);
+  color: #ffffff;
+  font-size: clamp(2rem, 3.4vw, 2.75rem);
   font-weight: 900;
-  letter-spacing: -0.035em;
+  letter-spacing: -0.03em;
+  margin-bottom: 0.45rem;
 }
 
 .quarto-title-block .subtitle {
-  color: #555555;
-  font-weight: 600;
+  color: #e8e8e4;
+  font-size: 1.1rem;
+  font-weight: 500;
+  max-width: 58rem;
+  margin-bottom: 0;
+}
+
+#quarto-document-content h2 {
+  position: relative;
+  color: var(--car-black);
+  font-size: 1.55rem;
+  font-weight: 850;
+  letter-spacing: -0.02em;
+  margin-top: 2.25rem;
+  margin-bottom: 1rem;
+  padding: 0.55rem 5.5rem 0.55rem 1rem;
+  border-left: 6px solid var(--car-red);
+  border-bottom: 2px solid #ecece8;
+  background: linear-gradient(90deg, rgba(217, 4, 41, 0.08), rgba(247, 247, 245, 0.5) 60%, transparent);
+}
+
+#quarto-document-content h2::after {
+  content: "";
+  position: absolute;
+  right: 0.75rem;
+  bottom: 0.35rem;
+  width: 4.1rem;
+  height: 1.55rem;
+  opacity: 0.85;
+  pointer-events: none;
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: right bottom;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 150 56'%3E%3Cpath d='M8 40h11l11-16q4-5 10-6l24-3 16-10q5-3 11-3h24q7 0 12 5l13 14 14 4q6 2 7 7l2 8h-10a10 10 0 0 0-20 0H48a10 10 0 0 0-20 0H8z' fill='%23ffffff' stroke='%23d90429' stroke-width='2.8' stroke-linejoin='round'/%3E%3Ccircle cx='38' cy='40' r='7' fill='%23ffffff' stroke='%23111111' stroke-width='2.8'/%3E%3Ccircle cx='123' cy='40' r='7' fill='%23ffffff' stroke='%23111111' stroke-width='2.8'/%3E%3Ccircle cx='38' cy='40' r='2.3' fill='%23d90429'/%3E%3Ccircle cx='123' cy='40' r='2.3' fill='%23d90429'/%3E%3C/svg%3E");
+}
+
+#quarto-document-content h3:not(.stat-card h3) {
+  color: var(--car-black);
+  font-weight: 800;
+  letter-spacing: -0.015em;
+  margin-top: 1.4rem;
+}
+
+#title-block-header + p,
+.plot-container + p {
+  background: linear-gradient(90deg, #fff5f6 0%, var(--car-paper) 100%);
+  border-left: 5px solid var(--car-red);
+  border-top: 1px solid #ece4e5;
+  border-right: 1px solid #ece4e5;
+  border-bottom: 1px solid #ece4e5;
+  padding: 1rem 1.25rem;
+  margin: 1rem 0 1.75rem;
+  font-size: 1.03rem;
+  color: #1c1c1c;
+  box-shadow: 0 6px 18px rgba(17, 17, 17, 0.06);
+}
+
+.plot-container + p:has(+ ol) {
+  margin-bottom: 0;
+  border-bottom: none;
+  padding-bottom: 0.5rem;
+  box-shadow: none;
+}
+
+.plot-container + p + ol {
+  background: linear-gradient(90deg, #fff5f6 0%, var(--car-paper) 100%);
+  border-left: 5px solid var(--car-red);
+  border-right: 1px solid #ece4e5;
+  border-bottom: 1px solid #ece4e5;
+  padding: 0.25rem 1.25rem 1rem 2.5rem;
+  margin-top: 0;
+  margin-bottom: 1.75rem;
+  box-shadow: 0 6px 18px rgba(17, 17, 17, 0.06);
+}
+
+.plot-container + p > strong:first-child {
+  display: inline-block;
+  color: var(--car-red);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-size: 0.88rem;
+  margin-right: 0.35rem;
+}
+
+#quarto-document-content p strong,
+#quarto-document-content li strong {
+  color: var(--car-black);
+  font-weight: 800;
 }
 
 .hero-banner {
@@ -178,6 +319,86 @@ a:hover {
   color: var(--car-red);
 }
 
+.vehicle-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  min-height: 205px;
+  padding: 0.75rem 0.5rem;
+  overflow: visible;
+  background: transparent;
+  border: 0;
+  clip-path: none;
+  box-shadow: none;
+  transition: transform 180ms ease;
+}
+
+.vehicle-card::after {
+  content: none;
+}
+
+.vehicle-card:hover {
+  transform: translateY(-4px);
+  border: 0;
+  box-shadow: none;
+}
+
+.vehicle-outline {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin: 0 auto 0.55rem;
+  overflow: visible;
+}
+
+.vehicle-body {
+  fill: #ffffff;
+  stroke: var(--car-red);
+  stroke-width: 3;
+  stroke-linejoin: round;
+}
+
+.vehicle-detail {
+  fill: none;
+  stroke: var(--car-black);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.vehicle-wheel {
+  fill: #ffffff;
+  stroke: var(--car-black);
+  stroke-width: 4;
+}
+
+.vehicle-hub {
+  fill: var(--car-red);
+}
+
+.vehicle-card:hover .vehicle-body {
+  fill: #fff5f6;
+  stroke: var(--car-red-bright);
+}
+
+.vehicle-card h3,
+.vehicle-card p {
+  position: relative;
+  z-index: 1;
+  margin-right: 0.5rem;
+  margin-left: 0.5rem;
+}
+
+.vehicle-card h3 {
+  margin-bottom: 0.3rem;
+}
+
+.vehicle-card p {
+  margin-bottom: 0;
+  color: #4a4a4a;
+  font-size: 0.92rem;
+}
+
 .plot-container,
 .dataTables_wrapper,
 .datatables {
@@ -192,6 +413,14 @@ a:hover {
 
 .plotly {
   border-radius: 0.55rem;
+}
+
+.plot-container .cell-output-display {
+  overflow: hidden !important;
+}
+
+.plot-container .plotly.html-widget {
+  width: 100% !important;
 }
 
 pre,
@@ -244,4 +473,42 @@ table thead th {
   .stat-grid {
     grid-template-columns: 1fr;
   }
+
+  .vehicle-card {
+    min-height: 180px;
+  }
+
+  #title-block-header.quarto-title-block {
+    padding: 1.6rem 1.25rem;
+  }
+
+  #title-block-header.quarto-title-block::after {
+    opacity: 0.18;
+    width: 8.5rem;
+  }
+}
+
+.car-parade-footer {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 2.25rem;
+  margin-bottom: 0.15rem;
+}
+
+.footer-car {
+  width: 96px;
+  height: 32px;
+  transition: transform 200ms ease;
+}
+
+.footer-car:hover {
+  transform: translateX(6px);
+}
+
+.footer-road-line {
+  max-width: 460px;
+  height: 2px;
+  margin: 0 auto 0.55rem;
+  background: repeating-linear-gradient(90deg, #ef233c 0 18px, transparent 18px 30px);
 }

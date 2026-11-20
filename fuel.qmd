@@ -1,45 +1,37 @@
 ---
 title: "Fuel Economy & EV Range"
-subtitle: "Comparing city MPG, highway MPG, electric range, and annual energy costs in 2022–2027 vehicles"
+subtitle: "How recent gas, hybrid, and electric vehicles compare on efficiency, range, and yearly energy cost"
+page-layout: full
+toc: false
 ---
 
 ```{r}
 #| label: setup
+#| include: false
 library(tidyverse)
 library(plotly)
 library(scales)
 
 recent_df <- read_csv("data/processed/recent_vehicles_2022_2027.csv", show_col_types = FALSE)
 
-n_recent_total <- nrow(recent_df)
 mpg_df <- recent_df |> filter(!is.na(mpg_city), !is.na(mpg_highway), !is.na(powertrain))
 n_mpg <- nrow(mpg_df)
 
 ev_df <- recent_df |>
   filter(powertrain == "Electric", !is.na(electric_range), electric_range > 0)
-n_ev_total <- nrow(ev_df)
 
 cost_df <- recent_df |> filter(!is.na(annual_fuel_cost), !is.na(powertrain))
 n_cost <- nrow(cost_df)
 ```
 
-## Overview & Unit Definitions (2022–2027 Vehicles)
+Today's car shoppers choose between traditional fuel engines, hybrids, and pure battery-electric vehicles. Looking across recent 2022–2027 models, we compare how each powertrain handles city traffic versus open-highway cruising, which electric brands travel farthest on a single charge, and how much drivers actually spend on fuel or electricity each year.
 
-Using **`r comma(n_recent_total)`** recent vehicle trims (**model years 2022–2027**) from [`recent_vehicles_2022_2027.csv`](data/processed/recent_vehicles_2022_2027.csv), **`r comma(n_mpg)`** trims carry complete EPA city and highway efficiency ratings (`248` unrated heavy-duty or pre-release trims are excluded from MPG charts rather than imputed).
-
-- **MPG vs. MPGe:** For **Gas**, **Hybrid**, and **Diesel** vehicles, EPA reports miles per gallon of liquid fuel (**MPG**). For **Electric** vehicles (EVs), EPA reports miles per gallon equivalent (**MPGe**, where `33.7 kWh` of electricity equals the energy content of one gallon of gasoline).
-- **EV Range vs. PHEV Tank Range:** Inspection of the raw Trimslate data showed that `Plug-in Hybrid` rows (`n = 232`) record *total combined gas + battery range* (`~360–430+` miles) in `electric_range`, whereas **`Electric`** rows (**`N = `r comma(n_ev_total)``** pure battery-electric trims) record true **single-charge battery range**. Accordingly, our EV range comparison includes verified battery-electric vehicles only.
-
----
-
-## 1. City vs. Highway Efficiency Across Powertrains
-
-How do stop-and-go city driving and steady highway cruising affect different powertrains? The dashed diagonal line below marks **equal city and highway efficiency (`Highway = City`)** across **`N = `r comma(n_mpg)``** rated 2022–2027 trims.
+## City Traffic vs. Highway Cruising
 
 ::: {.plot-container}
 ```{r}
 #| label: fig-city-hwy-mpg
-#| fig-height: 6
+#| echo: false
 
 mpg_plot_df <- mpg_df |>
   mutate(
@@ -49,8 +41,7 @@ mpg_plot_df <- mpg_df |>
       "Trim: ", trim, "<br>",
       "Powertrain: ", powertrain, " (", body_group, ")<br>",
       "City: ", mpg_city, " ", unit_label,
-      " | Highway: ", mpg_highway, " ", unit_label, "<br>",
-      "Combined: ", mpg_combined, " ", unit_label
+      " | Highway: ", mpg_highway, " ", unit_label
     )
   )
 
@@ -62,43 +53,45 @@ p_city_hwy <- ggplot(
     slope = 1,
     intercept = 0,
     linetype = "dashed",
-    color = "#4a5568",
+    color = "#666666",
     linewidth = 0.6
   ) +
   geom_point(alpha = 0.55, size = 1.7) +
-  scale_color_brewer(palette = "Set1") +
+  scale_color_manual(values = c(
+    "Electric" = "#d90429",
+    "Hybrid" = "#ef233c",
+    "Plug-in Hybrid" = "#ff758f",
+    "Gas" = "#111111",
+    "Diesel" = "#7a7a7a"
+  )) +
   labs(
     title = paste0(
-      "City vs. Highway Efficiency by Powertrain (N = ",
-      comma(n_mpg), " Trims, MY 2022-2027)"
+      "City vs. Highway Efficiency Across Powertrains (N = ",
+      comma(n_mpg), " Recent Trims)"
     ),
-    x = "City Efficiency (MPG for Fuel / MPGe for Electric)",
-    y = "Highway Efficiency (MPG for Fuel / MPGe for Electric)",
+    x = "City Efficiency (MPG / MPGe)",
+    y = "Highway Efficiency (MPG / MPGe)",
     color = "Powertrain"
   ) +
   theme_minimal(base_size = 12)
 
-ggplotly(p_city_hwy, tooltip = "text") |>
+ggplotly(p_city_hwy, tooltip = "text", height = 450) |>
   layout(
-    legend = list(orientation = "h", y = -0.16),
-    margin = list(b = 85)
-  )
+    autosize = TRUE,
+    legend = list(orientation = "h", x = 0, y = -0.18),
+    margin = list(t = 45, r = 20, b = 75, l = 65)
+  ) |>
+  config(responsive = TRUE)
 ```
 :::
 
-**Patterns & Findings:**
-Notice how **Gas (`n = 4,233`)** and **Diesel (`n = 126`)** trims sit consistently *above* the dashed parity line, averaging **`26.1` highway MPG** vs. **`19.7` city MPG** because combustion engines waste energy idling and braking in traffic. **Hybrids (`n = 1,130`)** close that gap (`26.9` city / `30.8` highway MPG), while **Electric vehicles (`n = 1,428`)** flip *below* the parity line—averaging **`97.3` city MPGe** vs. **`87.1` highway MPGe**—because regenerative braking recaptures city deceleration energy while aerodynamic drag rises at highway speeds.
+Gasoline and diesel cars sit above the dashed diagonal line because their engines run more efficiently at steady highway speeds than in stop-and-go traffic. Electric vehicles flip that pattern completely, sitting below the line because regenerative braking recaptures energy every time the driver slows down in the city while wind resistance works hardest on the highway. Conventional hybrids bridge the middle, delivering nearly even efficiency everywhere.
 
----
-
-## 2. Battery-Electric Driving Range Across Manufacturers
-
-Among pure battery-electric vehicles (**`powertrain == "Electric"`**), single-charge EPA range averages **`r round(mean(ev_df$electric_range), 1)` miles** across all **`r comma(n_ev_total)`** trims (`2022–2027`). Below, we compare the **26 manufacturers** with at least 10 rated EV trims, coloring bars by average combined **MPGe** to distinguish aerodynamic efficiency from sheer battery size.
+## Single-Charge Range Across Electric Brands
 
 ::: {.plot-container}
 ```{r}
 #| label: fig-ev-range-mfr
-#| fig-height: 6.5
 
 ev_mfr <- ev_df |>
   summarize(
@@ -114,9 +107,9 @@ ev_mfr <- ev_df |>
     make = fct_reorder(make, mean_range),
     hover_text = paste0(
       "<b>", make, "</b> (n = ", n_trims, " EV trims)<br>",
-      "Average EV Range: ", round(mean_range, 1), " miles<br>",
+      "Average Range: ", round(mean_range, 0), " miles<br>",
       "Longest-Range Trim: ", round(max_range, 0), " miles<br>",
-      "Average Combined Efficiency: ", round(mean_mpge, 1), " MPGe<br>",
+      "Average Efficiency: ", round(mean_mpge, 0), " MPGe<br>",
       "Avg Annual Electricity Cost: ", dollar(round(mean_cost, 0))
     )
   )
@@ -129,52 +122,48 @@ p_ev_range <- ggplot(
 ) +
   geom_col(width = 0.72) +
   scale_x_continuous(labels = label_number(suffix = " mi")) +
-  scale_fill_viridis_c(option = "viridis", direction = -1) +
+  scale_fill_gradient(low = "#202020", high = "#ef233c") +
   labs(
     title = paste0(
-      "Average EPA Single-Charge Range Across 26 EV Makers (N = ",
-      comma(n_ev_mfr_trims), " EV Trims)"
+      "Average Single-Charge Driving Range by EV Brand (N = ",
+      comma(n_ev_mfr_trims), " Battery-Electric Trims)"
     ),
-    x = "Average EPA Electric Driving Range (Miles)",
+    x = "Average EPA Electric Range (Miles)",
     y = NULL,
     fill = "Avg MPGe"
   ) +
   theme_minimal(base_size = 11)
 
-ggplotly(p_ev_range, tooltip = "text")
+ggplotly(p_ev_range, tooltip = "text", height = 520) |>
+  layout(
+    autosize = TRUE,
+    margin = list(t = 45, r = 20, b = 50, l = 95)
+  ) |>
+  config(responsive = TRUE)
 ```
 :::
 
-**Patterns & Findings:**
-**Lucid** leads the industry by nearly 90 miles (`425.7` miles average; `520` miles peak on the Air Dream Edition) while maintaining top-tier efficiency (**`116.0 MPGe`**). By contrast, comparing bar length with color exposes two very different engineering paths past 320 miles: **Tesla (`328.4 mi`, `114.0 MPGe`)** achieves long range through lightweight aerodynamics, whereas electric pickup makers **Chevrolet (`336.1 mi`, `86.7 MPGe`)**, **Rivian (`331.4 mi`, `76.3 MPGe`)**, and **GMC (`322.2 mi`, `55.5 MPGe`)** rely on massive battery packs that consume roughly twice as much electricity per mile.
+Focusing strictly on pure battery-electric cars reveals two very different engineering paths to long driving range. Sleek sedan specialists like Lucid and Tesla pair long driving distances with bright-red high efficiency through low weight and smooth aerodynamics, whereas electric truck makers like Chevrolet, Rivian, and GMC reach long range by fitting huge, heavy battery packs that draw noticeably more electricity per mile.
 
----
-
-## 3. EPA Estimated Annual Fuel & Electricity Cost by Powertrain
-
-How much do efficiency differences save drivers each year? Using EPA's standardized annual energy cost estimates across **`N = `r comma(n_cost)``** trims (`2022–2027`), we compare average annual running costs by powertrain.
+## Yearly Fuel and Electricity Costs
 
 ::: {.plot-container}
 ```{r}
 #| label: fig-annual-fuel-cost
-#| fig-height: 4.5
 
 cost_summary <- cost_df |>
   summarize(
     n_trims = n(),
     mean_cost = mean(annual_fuel_cost),
     median_cost = median(annual_fuel_cost),
-    mean_comb = mean(mpg_combined, na.rm = TRUE),
     .by = powertrain
   ) |>
   mutate(
     powertrain = fct_reorder(powertrain, mean_cost),
-    unit_label = if_else(powertrain == "Electric", "MPGe", "MPG"),
     hover_text = paste0(
       "<b>", powertrain, "</b> (n = ", comma(n_trims), " trims)<br>",
       "Average Annual Cost: ", dollar(round(mean_cost, 0)), "/yr<br>",
-      "Median Annual Cost: ", dollar(round(median_cost, 0)), "/yr<br>",
-      "Avg Combined Rating: ", round(mean_comb, 1), " ", unit_label
+      "Typical (Median) Cost: ", dollar(round(median_cost, 0)), "/yr"
     )
   )
 
@@ -182,23 +171,33 @@ p_cost <- ggplot(
   cost_summary,
   aes(x = mean_cost, y = powertrain, fill = powertrain, text = hover_text)
 ) +
-  geom_col(width = 0.65) +
+  geom_col(width = 0.62) +
   scale_x_continuous(labels = label_dollar(suffix = "/yr")) +
-  scale_fill_brewer(palette = "Set2") +
+  scale_fill_manual(values = c(
+    "Electric" = "#d90429",
+    "Hybrid" = "#ef233c",
+    "Plug-in Hybrid" = "#ff758f",
+    "Gas" = "#202020",
+    "Diesel" = "#666666"
+  )) +
   labs(
     title = paste0(
-      "Average EPA Annual Fuel / Electricity Cost by Powertrain (N = ",
-      comma(n_cost), " Trims, MY 2022-2027)"
+      "Average Estimated Yearly Energy Cost by Powertrain (N = ",
+      comma(n_cost), " Recent Trims)"
     ),
-    x = "Estimated Annual Fuel / Energy Cost (USD / Year)",
+    x = "Estimated Annual Fuel or Electricity Cost",
     y = NULL
   ) +
   theme_minimal(base_size = 12) +
   theme(legend.position = "none")
 
-ggplotly(p_cost, tooltip = "text")
+ggplotly(p_cost, tooltip = "text", height = 360) |>
+  layout(
+    autosize = TRUE,
+    margin = list(t = 45, r = 20, b = 45, l = 95)
+  ) |>
+  config(responsive = TRUE)
 ```
 :::
 
-**Patterns & Findings:**
-**Electric** vehicles average just **`$847/year`** in estimated electricity costs (`$850` median)—saving roughly **`$2,510 per year`** (`$12,550` over five years) compared with conventional **Gas** vehicles (**`$3,357/year`**) and **`$2,880/year`** compared with truck-heavy **Diesel** trims (**`$3,727/year`**). Conventional **Hybrids (`$2,879/year`)** trim about `$478/year` off average gasoline fuel bills without requiring home charging infrastructure.
+Those efficiency gains show up directly in owners' wallets. Pure electric vehicles cost roughly a quarter as much to power each year as traditional gasoline or diesel models, saving typical drivers thousands of dollars over several years of ownership, while hybrids offer meaningful yearly pump savings for drivers without home charging.

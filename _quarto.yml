@@ -19,15 +19,25 @@ website:
         text: Automotive Trends
       - href: about.qmd
         text: About
+  page-footer:
+    background: dark
+    center: |
+      <div class="car-parade-footer" aria-hidden="true">
+        <svg viewBox="0 0 180 56" class="footer-car"><path d="M12 40h12l12-16q4-5 11-6l26-3 18-11q5-3 12-3h28q8 0 13 5l14 15 16 5q6 2 8 8l2 6h-12a12 12 0 0 0-24 0H56a12 12 0 0 0-24 0H12z" fill="none" stroke="#ef233c" stroke-width="2.5"/><circle cx="44" cy="40" r="8" fill="#111" stroke="#fff" stroke-width="2.2"/><circle cx="150" cy="40" r="8" fill="#111" stroke="#fff" stroke-width="2.2"/></svg>
+        <svg viewBox="0 0 180 56" class="footer-car"><path d="M10 40h10l9-15q3-6 10-7l16-3v-9q0-5 6-5h56q6 0 10 5l12 14 22 2q10 1 14 9l5 9h-12a12 12 0 0 0-24 0H54a12 12 0 0 0-24 0H10z" fill="none" stroke="#ffffff" stroke-width="2.3"/><circle cx="42" cy="40" r="8" fill="#111" stroke="#ef233c" stroke-width="2.2"/><circle cx="152" cy="40" r="8" fill="#111" stroke="#ef233c" stroke-width="2.2"/></svg>
+        <svg viewBox="0 0 180 56" class="footer-car"><path d="M10 40h11l6-12q3-5 9-5h22l12-14q4-5 11-5h34q6 0 9 5l8 14h28q7 0 10 6l4 11h-12a12 12 0 0 0-24 0H54a12 12 0 0 0-24 0H10z" fill="none" stroke="#ef233c" stroke-width="2.5"/><circle cx="42" cy="40" r="8" fill="#111" stroke="#fff" stroke-width="2.2"/><circle cx="150" cy="40" r="8" fill="#111" stroke="#fff" stroke-width="2.2"/></svg>
+      </div>
+      <div class="footer-road-line"></div>
+      <span style="font-size:0.82rem; color:#d8d8d4;">What Makes a Car Worth Its Price? · Built with R, Quarto &amp; Tidyverse</span>
 
 format:
   html:
     theme: cosmo
     css: styles.css
     toc: true
-    code-fold: true
 
 execute:
+  echo: false
   freeze: auto
   warning: false
   message: false

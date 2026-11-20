@@ -1,14 +1,18 @@
 ---
 title: "Car Explorer"
-subtitle: "Search and filter 2022–2027 vehicles, compare specifications, and view licensed photographs"
+subtitle: "Browse featured 2024–2027 rides, spot high-power bargains, or filter all 7,397 recent trims"
+page-layout: full
+toc: false
 resources:
   - images/*
 ---
 
 ```{r}
 #| label: setup
+#| include: false
 library(tidyverse)
 library(DT)
+library(plotly)
 library(htmltools)
 library(scales)
 
@@ -16,46 +20,34 @@ recent_df <- read_csv("data/processed/recent_vehicles_2022_2027.csv", show_col_t
 img_df <- read_csv("data/processed/vehicle_images.csv", show_col_types = FALSE)
 
 n_recent <- nrow(recent_df)
-n_makes <- n_distinct(recent_df$make)
+sweet_df <- recent_df |>
+  filter(!is.na(horsepower_combined), !is.na(annual_fuel_cost), !is.na(powertrain))
+n_sweet <- nrow(sweet_df)
 ```
 
-## Explore `r comma(n_recent)` Recent Vehicles (MY 2022–2027)
-
-Use this page to inspect individual vehicles across **`r n_makes` manufacturers** from `recent_vehicles_2022_2027.csv` (combining Trimslate 2022–2027 specifications with MY 2024 EPA certification records):
-
-1. **Featured Vehicle Photo & Spec Gallery (`N = 15` matched models):** Browse recent models across powertrains with Creative Commons photographs and full photographer/license attribution from Wikimedia Commons.
-2. **Full Interactive Search & Filter Table (`N = `r comma(n_recent)`` trims):** Filter all 2022–2027 trims by manufacturer, model, year, body style, powertrain, horsepower, MPG/MPGe, electric range, and annual fuel cost.
-
----
-
-## 1. Featured Vehicle Gallery & Attribution
+## Featured Rides (MY 2024–2027)
 
 ```{r}
 #| label: build-gallery-data
+#| include: false
 
-# Match each downloaded image to the newest well-populated 2024-2027 trim for that make & model
 featured_specs <- img_df |>
   pmap(\(make, model_prefix, local_image, commons_file, source_url, photographer, license, license_url) {
-    matches <- recent_df |>
+    recent_df |>
       filter(
         .data$make == .env$make,
         str_detect(model, fixed(model_prefix, ignore_case = TRUE)),
         !is.na(mpg_combined)
       ) |>
-      # Prefer trims that also have certified horsepower when available
-      arrange(is.na(horsepower_combined), desc(year))
-
-    top_row <- slice_head(matches, n = 1)
-    bind_cols(
-      top_row,
-      tibble(
+      arrange(is.na(horsepower_combined), desc(year)) |>
+      slice_head(n = 1) |>
+      bind_cols(tibble(
         local_image = local_image,
         source_url = source_url,
         photographer = photographer,
         license = license,
         license_url = license_url
-      )
-    )
+      ))
   }) |>
   list_rbind()
 
@@ -63,50 +55,49 @@ render_vehicle_cards <- function(df) {
   cards <- pmap(df, function(...) {
     row <- list(...)
     eff_unit <- if (identical(row$powertrain, "Electric")) "MPGe" else "MPG"
-    hp_label <- if (!is.na(row$horsepower_combined)) {
-      paste0(comma(row$horsepower_combined), " hp")
-    } else {
-      "Not rated (EV/Hybrid)"
-    }
-    range_line <- if (identical(row$powertrain, "Electric") && !is.na(row$electric_range) && row$electric_range > 0) {
-      tags$div(tags$strong("EV Range: "), paste0(row$electric_range, " miles"))
+    hp_val <- if (!is.na(row$horsepower_combined)) paste0(comma(row$horsepower_combined), " hp") else "EV / Hybrid"
+    cost_val <- if (!is.na(row$annual_fuel_cost)) paste0(dollar(row$annual_fuel_cost), "/yr") else "—"
+    range_badge <- if (identical(row$powertrain, "Electric") && !is.na(row$electric_range) && row$electric_range > 0) {
+      tags$span(
+        style = "background:#d90429; color:#fff; font-size:0.72rem; font-weight:700; padding:0.15rem 0.5rem; border-radius:999px; margin-left:0.35rem;",
+        paste0(row$electric_range, " mi range")
+      )
     } else {
       NULL
     }
-    cost_label <- if (!is.na(row$annual_fuel_cost)) dollar(row$annual_fuel_cost) else "N/A"
 
     div(
-      style = "background:#ffffff; border:1px solid #e2e8f0; border-radius:0.6rem; overflow:hidden; display:flex; flex-direction:column; justify-content:space-between;",
+      style = "background:#ffffff; border:1px solid #deded9; border-top:4px solid #d90429; box-shadow:0 6px 18px rgba(17,17,17,0.08); display:flex; flex-direction:column; justify-content:space-between;",
       div(
         tags$img(
           src = row$local_image,
           alt = paste(row$year, row$make, row$model),
-          style = "width:100%; height:185px; object-fit:cover; border-bottom:1px solid #e2e8f0;"
+          style = "width:100%; height:175px; object-fit:cover; border-bottom:1px solid #ecece8;"
         ),
         div(
-          style = "padding:0.9rem 1rem;",
+          style = "padding:0.75rem 0.9rem;",
+          div(
+            style = "margin-bottom:0.35rem;",
+            tags$span(
+              style = "background:#111111; color:#ffffff; font-size:0.72rem; font-weight:700; padding:0.15rem 0.5rem; border-radius:999px;",
+              row$powertrain
+            ),
+            range_badge
+          ),
           tags$h4(
-            style = "margin:0 0 0.25rem 0; font-size:1.05rem;",
+            style = "margin:0.2rem 0 0.55rem 0; font-size:1rem; font-weight:800; color:#111111;",
             paste(row$year, row$make, row$model)
           ),
-          tags$div(
-            style = "font-size:0.82rem; color:#4a5568; margin-bottom:0.55rem;",
-            paste0(row$powertrain, " · ", row$body_group)
-          ),
-          tags$div(
-            style = "font-size:0.88rem; line-height:1.5;",
-            tags$div(tags$strong("Horsepower: "), hp_label),
-            tags$div(
-              tags$strong("Efficiency: "),
-              paste0(row$mpg_city, " city / ", row$mpg_highway, " hwy ", eff_unit)
-            ),
-            range_line,
-            tags$div(tags$strong("Est. Fuel/Energy Cost: "), paste0(cost_label, "/yr"))
+          div(
+            style = "display:grid; grid-template-columns:repeat(3, 1fr); gap:0.35rem; background:#f7f7f5; padding:0.45rem; border-radius:0.35rem; text-align:center; font-size:0.78rem;",
+            div(tags$div(style = "color:#666; font-size:0.68rem;", "POWER"), tags$strong(hp_val)),
+            div(tags$div(style = "color:#666; font-size:0.68rem;", eff_unit), tags$strong(paste0(row$mpg_city, "/", row$mpg_highway))),
+            div(tags$div(style = "color:#666; font-size:0.68rem;", "ENERGY"), tags$strong(cost_val))
           )
         )
       ),
       div(
-        style = "background:#f8f9fa; border-top:1px solid #edf2f7; padding:0.5rem 1rem; font-size:0.74rem; color:#4a5568;",
+        style = "background:#fafafa; border-top:1px solid #eeeeee; padding:0.4rem 0.9rem; font-size:0.7rem; color:#666;",
         "Photo: ", row$photographer, " · ",
         tags$a(href = row$license_url, target = "_blank", rel = "noopener", row$license),
         " · ",
@@ -116,7 +107,7 @@ render_vehicle_cards <- function(df) {
   })
 
   div(
-    style = "display:grid; grid-template-columns:repeat(auto-fill, minmax(270px, 1fr)); gap:1.1rem; margin:1rem 0;",
+    style = "display:grid; grid-template-columns:repeat(auto-fill, minmax(255px, 1fr)); gap:1rem; margin:0.75rem 0;",
     cards
   )
 }
@@ -124,10 +115,11 @@ render_vehicle_cards <- function(df) {
 
 ::: {.panel-tabset}
 
-### All Featured (`r nrow(featured_specs)`)
+### All (`r nrow(featured_specs)`)
 
 ```{r}
 #| label: gallery-all
+#| echo: false
 render_vehicle_cards(featured_specs)
 ```
 
@@ -135,6 +127,7 @@ render_vehicle_cards(featured_specs)
 
 ```{r}
 #| label: gallery-ev
+#| echo: false
 render_vehicle_cards(featured_specs |> filter(powertrain == "Electric"))
 ```
 
@@ -142,6 +135,7 @@ render_vehicle_cards(featured_specs |> filter(powertrain == "Electric"))
 
 ```{r}
 #| label: gallery-gas
+#| echo: false
 render_vehicle_cards(featured_specs |> filter(powertrain == "Gas"))
 ```
 
@@ -149,42 +143,109 @@ render_vehicle_cards(featured_specs |> filter(powertrain == "Gas"))
 
 ```{r}
 #| label: gallery-hybrid
+#| echo: false
 render_vehicle_cards(featured_specs |> filter(powertrain %in% c("Hybrid", "Plug-in Hybrid")))
 ```
 
 :::
 
-*Image Provenance Note: Because `carapi.trustcar.info` is currently offline in DNS, matched vehicle photographs and Creative Commons license metadata (`CC BY` / `CC BY-SA`) are retrieved reproducibly via [`scripts/download_images.R`](scripts/download_images.R) from **Wikimedia Commons**—the same open-licensed image repository referenced by Trimslate.*
+## Sweet-Spot Finder: Power vs. Annual Fuel Cost (`N = `r comma(n_sweet)``)
 
----
+Hover or zoom into the **bottom-right corner** to spot high-horsepower cars with ultra-low annual running costs (`MY 2022–2027`).
 
-## 2. Search & Filter All 2022–2027 Vehicles (`N = `r comma(n_recent)`` Trims)
+::: {.plot-container}
+```{r}
+#| label: fig-sweet-spot
 
-Use the **Search** box at top right or the **column filter boxes** directly beneath each column header to filter by model year, manufacturer, model, body style, powertrain, horsepower, efficiency, EV range, or annual fuel cost.
+sweet_plot_df <- sweet_df |>
+  mutate(
+    hover_text = paste0(
+      "<b>", year, " ", make, " ", model, "</b><br>",
+      powertrain, " · ", body_group, "<br>",
+      "Horsepower: ", comma(horsepower_combined), " hp<br>",
+      "Annual Cost: ", dollar(annual_fuel_cost), "/yr<br>",
+      "Combined: ", mpg_combined, if_else(powertrain == "Electric", " MPGe", " MPG")
+    )
+  )
+
+p_sweet <- ggplot(
+  sweet_plot_df,
+  aes(x = horsepower_combined, y = annual_fuel_cost, color = powertrain, text = hover_text)
+) +
+  geom_point(alpha = 0.6, size = 1.9) +
+  scale_x_continuous(labels = label_number(suffix = " hp")) +
+  scale_y_continuous(labels = label_dollar(suffix = "/yr")) +
+  scale_color_manual(values = c(
+    "Electric" = "#d90429",
+    "Hybrid" = "#ef233c",
+    "Plug-in Hybrid" = "#ff758f",
+    "Gas" = "#202020",
+    "Diesel" = "#7a7a7a"
+  )) +
+  labs(
+    title = paste0("Horsepower vs. Estimated Annual Energy Cost (N = ", comma(n_sweet), " Recent Trims)"),
+    x = "Horsepower (hp)",
+    y = "EPA Annual Fuel / Electricity Cost",
+    color = "Powertrain"
+  ) +
+  theme_minimal(base_size = 12)
+
+ggplotly(p_sweet, tooltip = "text", height = 410) |>
+  layout(
+    autosize = TRUE,
+    legend = list(orientation = "h", x = 0, y = -0.18),
+    margin = list(t = 42, r = 20, b = 70, l = 65)
+  ) |>
+  config(responsive = TRUE)
+```
+:::
+
+## Search All `r comma(n_recent)` Trims (MY 2022–2027)
+
+```{=html}
+<div style="display:flex; flex-wrap:wrap; gap:0.45rem; align-items:center; margin:0.5rem 0 0.75rem;">
+  <span style="font-size:0.85rem; font-weight:700; color:#111;">Quick Jump:</span>
+  <button type="button" class="btn btn-sm btn-primary" onclick="quickFilterCar('Electric')">⚡ Electric</button>
+  <button type="button" class="btn btn-sm btn-dark" onclick="quickFilterCar('Hybrid')">🌱 Hybrid</button>
+  <button type="button" class="btn btn-sm btn-dark" onclick="quickFilterCar('Porsche')">🏎️ Porsche</button>
+  <button type="button" class="btn btn-sm btn-dark" onclick="quickFilterCar('Lucid')">🔋 Lucid</button>
+  <button type="button" class="btn btn-sm btn-dark" onclick="quickFilterCar('Rivian')">🛻 Rivian</button>
+  <button type="button" class="btn btn-sm btn-dark" onclick="quickFilterCar('Corvette')">🏁 Corvette</button>
+  <button type="button" class="btn btn-sm btn-outline-secondary" onclick="quickFilterCar('')">↺ Reset</button>
+</div>
+<script>
+function quickFilterCar(term) {
+  const input = document.querySelector('.dataTables_filter input');
+  if (input) {
+    input.value = term;
+    input.dispatchEvent(new Event('input', { bubbles: true }));
+    input.dispatchEvent(new Event('keyup', { bubbles: true }));
+  }
+}
+</script>
+```
 
 ```{r}
 #| label: tbl-car-explorer
 
 explorer_table <- recent_df |>
-  mutate(
-    ev_range_only = if_else(powertrain == "Electric", electric_range, NA_real_)
-  ) |>
+  mutate(ev_range_only = if_else(powertrain == "Electric", electric_range, NA_real_)) |>
   select(
     Year = year,
     Make = make,
     Model = model,
     Trim = trim,
-    `Body Style` = body_group,
+    Style = body_group,
     Powertrain = powertrain,
-    `HP` = horsepower_combined,
-    `City` = mpg_city,
-    `Hwy` = mpg_highway,
-    `EV Range (mi)` = ev_range_only,
-    `Fuel Cost ($/yr)` = annual_fuel_cost
+    HP = horsepower_combined,
+    City = mpg_city,
+    Hwy = mpg_highway,
+    `EV Mi` = ev_range_only,
+    `$/Yr` = annual_fuel_cost
   ) |>
   mutate(
     Make = as.factor(Make),
-    `Body Style` = as.factor(`Body Style`),
+    Style = as.factor(Style),
     Powertrain = as.factor(Powertrain)
   )
 
@@ -193,19 +254,11 @@ datatable(
   filter = "top",
   rownames = FALSE,
   options = list(
-    pageLength = 15,
+    pageLength = 12,
     scrollX = TRUE,
     autoWidth = TRUE
-  ),
-  caption = htmltools::tags$caption(
-    style = "caption-side: top; text-align: left; font-weight: 600; margin-bottom: 0.5rem;",
-    paste0(
-      "Interactive 2022-2027 Vehicle Specifications Explorer (N = ",
-      comma(n_recent),
-      " Trims; City/Hwy reported in MPG for fuel vehicles and MPGe for Electric vehicles)"
-    )
   )
 ) |>
-  formatCurrency("Fuel Cost ($/yr)", currency = "$", digits = 0) |>
-  formatRound(c("HP", "City", "Hwy", "EV Range (mi)"), digits = 0)
+  formatCurrency("$/Yr", currency = "$", digits = 0) |>
+  formatRound(c("HP", "City", "Hwy", "EV Mi"), digits = 0)
 ```

@@ -1,10 +1,13 @@
 ---
 title: "Automotive Trends"
-subtitle: "Fifty years of U.S. EPA trends in fuel economy, horsepower, market share, and MY 2024 emissions"
+subtitle: "Fifty years of how American cars evolved in efficiency, power, body style, and emissions"
+page-layout: full
+toc: false
 ---
 
 ```{r}
 #| label: setup
+#| include: false
 library(tidyverse)
 library(plotly)
 library(scales)
@@ -12,30 +15,17 @@ library(scales)
 trends_df <- read_csv("data/processed/epa_trends_clean.csv", show_col_types = FALSE)
 epa24_df <- read_csv("data/processed/epa_clean.csv", show_col_types = FALSE)
 
-n_trends_rows <- nrow(trends_df)
-n_epa24_rows <- nrow(epa24_df)
-n_combined_epa <- n_trends_rows + n_epa24_rows
-
 distinct_types <- c("Sedan/Wagon", "Car SUV", "Truck SUV", "Pickup", "Minivan/Van")
 ```
 
-## Overview of EPA Automotive Trends Data (`N = `r comma(n_combined_epa)`` EPA Records)
+Today's vehicles look almost nothing like the cars on American roads fifty years ago. Long-term U.S. Environmental Protection Agency records show how automakers responded to fuel crises, changing family tastes, and modern clean-energy rules—transforming heavy, thirsty sedans of the 1970s into today's lineup of turbocharged crossovers, pickups, hybrids, and electric vehicles.
 
-To place recent **2022–2027** vehicles in historical context, this page analyzes two complementary U.S. Environmental Protection Agency datasets:
-
-1. **Historical EPA Summary Trends (`epa_trends_clean.csv`, `n = `r comma(n_trends_rows)`` rows, MY 1975–2025):** Tracks fleetwide and segment-level real-world MPG, horsepower, inertia weight, footprint, and U.S. production share across 51 model years (model year 2025 values are marked preliminary by EPA and omit final production shares).
-2. **Model Year 2024 Detailed Certification Data (`epa_clean.csv`, `n = `r comma(n_epa24_rows)`` vehicle configurations):** Captures model-level inertia weight, horsepower, fuel economy, and tailpipe $\text{CO}_2$ emissions across manufacturer compliance fleets.
-
----
-
-## 1. Fifty Years of Real-World MPG and Horsepower (1975–2025)
-
-How did automakers double fuel economy while simultaneously nearly doubling engine output? Below, we plot **Real-World MPG** and **Average Horsepower** from **1975 through preliminary 2025** across the overall U.S. fleet (`All`) and the five mutually exclusive EPA vehicle types (**`N = 306`** segment-year observations).
+## Doubling Efficiency and Horsepower Over Time
 
 ::: {.plot-container}
 ```{r}
 #| label: fig-epa-mpg-hp-trends
-#| fig-height: 6
+#| echo: false
 
 focus_types <- c("All", distinct_types)
 
@@ -58,7 +48,7 @@ long_trends <- trends_df |>
     hover_text = paste0(
       "<b>", year, prelim_note, " — ", vehicle_type, "</b><br>",
       metric_label, ": ", round(value, 1), unit_str, "<br>",
-      "Avg Inertia Weight: ", comma(round(weight_lbs, 0)), " lbs"
+      "Avg Weight: ", comma(round(weight_lbs, 0)), " lbs"
     )
   )
 
@@ -68,14 +58,21 @@ p_trends <- ggplot(
   long_trends,
   aes(x = year, y = value, color = vehicle_type, group = vehicle_type)
 ) +
-  geom_line(linewidth = 0.85) +
-  geom_point(aes(text = hover_text), size = 1.2, alpha = 0.8) +
+  geom_line(linewidth = 0.9) +
+  geom_point(aes(text = hover_text), size = 1.2, alpha = 0.85) +
   facet_wrap(~ metric_label, scales = "free_y", ncol = 2) +
-  scale_color_brewer(palette = "Dark2") +
+  scale_color_manual(values = c(
+    "All" = "#d90429",
+    "Sedan/Wagon" = "#111111",
+    "Car SUV" = "#ef233c",
+    "Truck SUV" = "#555555",
+    "Pickup" = "#8d99ae",
+    "Minivan/Van" = "#b5b5b0"
+  )) +
   labs(
     title = paste0(
-      "U.S. Fleet Fuel Economy vs. Horsepower Over Time (N = ",
-      n_trend_obs, " EPA Segment-Year Records, 1975-2025)"
+      "U.S. Fleet Fuel Economy and Horsepower Since 1975 (N = ",
+      n_trend_obs, " EPA Segment-Year Records)"
     ),
     x = "Model Year",
     y = NULL,
@@ -83,30 +80,23 @@ p_trends <- ggplot(
   ) +
   theme_minimal(base_size = 11)
 
-ggplotly(p_trends, tooltip = "text") |>
+ggplotly(p_trends, tooltip = "text", height = 450) |>
   layout(
-    legend = list(orientation = "h", y = -0.16),
-    margin = list(b = 85)
-  )
+    autosize = TRUE,
+    legend = list(orientation = "h", x = 0, y = -0.18),
+    margin = list(t = 45, r = 20, b = 75, l = 55)
+  ) |>
+  config(responsive = TRUE)
 ```
 :::
 
-**Patterns & Findings:**
-Three distinct technological eras stand out in the `All` fleet line:
-1. **1975–1985 Downsizing Era:** Following the first CAFE standards, fleetwide real-world efficiency jumped from **`13.1` to `21.3 MPG`** (`+63%`), achieved largely by cutting vehicle weight (`4,060` $\rightarrow$ `3,271 lbs`) and horsepower (`137` $\rightarrow$ `114 hp`).
-2. **1985–2005 Horsepower & SUV Boom:** Fleetwide MPG stalled and slipped to **`19.9 MPG`** in 2005 because engine improvements were absorbed by rising weight (`4,059 lbs`) and surging output (**`209 hp`**).
-3. **2005–2025 Electrification & Turbo Era:** Direct injection, multi-speed transmissions, hybrids, and EVs pushed **both** metrics to all-time highs—reaching **`28.1 MPG`** and **`264 hp`** fleetwide in preliminary 2025 (`335 hp` average for Pickups; `39.2 MPG` in 2024 for Car SUVs).
+American cars moved through three clear eras over the past half-century. In the late 1970s and early 1980s, automakers boosted gas mileage quickly by shrinking heavy cars and trimming engine output. For the next twenty years, fuel economy plateaued because new engine gains went straight into bigger SUVs and stronger engines instead. Only over the last two decades—thanks to turbocharging, modern transmissions, hybrids, and electric motors—have both fuel economy and horsepower climbed together to record highs.
 
----
-
-## 2. The Shift From Sedans to SUVs (U.S. Production Share, 1975–2024)
-
-Because EPA's preliminary 2025 rows omit final production shares (`8` rows with `-` converted to `NA`), we examine verified production shares from **1975 through 2024** across all five mutually exclusive vehicle types (**`N = 250`** segment-year observations summing to `100%` each year).
+## How SUVs Replaced the Family Sedan
 
 ::: {.plot-container}
 ```{r}
 #| label: fig-production-share
-#| fig-height: 5.2
 
 share_df <- trends_df |>
   filter(vehicle_type %in% distinct_types, !is.na(production_share)) |>
@@ -117,9 +107,8 @@ share_df <- trends_df |>
     ),
     hover_text = paste0(
       "<b>", year, " — ", vehicle_type, "</b><br>",
-      "Production Share: ", percent(production_share, accuracy = 0.1), "<br>",
-      "Real-World MPG: ", round(mpg_real_world, 1), " MPG<br>",
-      "Avg Horsepower: ", round(horsepower, 0), " hp"
+      "Market Share: ", percent(production_share, accuracy = 0.1), "<br>",
+      "Real-World MPG: ", round(mpg_real_world, 1), " MPG"
     )
   )
 
@@ -129,60 +118,59 @@ p_share <- ggplot(
   share_df,
   aes(x = year, y = production_share, fill = vehicle_type)
 ) +
-  geom_area(alpha = 0.88, color = "white", linewidth = 0.2) +
+  geom_area(alpha = 0.9, color = "white", linewidth = 0.25) +
   geom_point(aes(text = hover_text), alpha = 0, size = 0.5) +
   scale_y_continuous(labels = label_percent()) +
-  scale_fill_brewer(palette = "Set2") +
+  scale_fill_manual(values = c(
+    "Truck SUV" = "#d90429",
+    "Car SUV" = "#ef233c",
+    "Pickup" = "#4a4a4a",
+    "Minivan/Van" = "#9e9e99",
+    "Sedan/Wagon" = "#111111"
+  )) +
   labs(
     title = paste0(
-      "U.S. New-Vehicle Production Share by Body Type (N = ",
+      "Share of U.S. New-Vehicle Production by Body Type (N = ",
       n_share_obs, " EPA Records, 1975-2024)"
     ),
     x = "Model Year",
-    y = "Share of U.S. New-Vehicle Production",
+    y = "Share of New Vehicles Built",
     fill = "Vehicle Type"
   ) +
   theme_minimal(base_size = 12)
 
-ggplotly(p_share, tooltip = "text") |>
+ggplotly(p_share, tooltip = "text", height = 430) |>
   layout(
-    legend = list(orientation = "h", y = -0.18),
-    margin = list(b = 85)
-  )
+    autosize = TRUE,
+    legend = list(orientation = "h", x = 0, y = -0.18),
+    margin = list(t = 45, r = 20, b = 75, l = 60)
+  ) |>
+  config(responsive = TRUE)
 ```
 :::
 
-**Patterns & Findings:**
-In **1975**, **Sedans and Wagons** accounted for **`80.6%`** of U.S. light-duty production while SUVs (`Truck SUV` + `Car SUV`) totaled just **`1.8%`**. By **2024**, those positions had completely inverted: **SUVs reached `60.2%`** of all new vehicles built (`49.6%` Truck SUVs + `10.6%` Car SUVs), **Pickups** held steady at **`14.1%`**, **Minivans/Vans** shrank to **`2.0%`**, and **Sedans/Wagons** fell to an all-time low of **`23.7%`**.
+In the mid-1970s, sedans and station wagons dominated American driveways while SUVs were a tiny niche. Over the decades that followed, minivans briefly surged before crossovers and truck-based SUVs steadily took over the market—until SUVs now represent roughly three out of every five new vehicles built, leaving traditional sedans at an all-time low while pickup trucks hold a steady, loyal slice of the market.
 
----
-
-## 3. Model Year 2024 Inertia Weight vs. Tailpipe $\text{CO}_2$ Emissions
-
-Using EPA's detailed **Model Year 2024** certification dataset (`epa_clean.csv`), **`1,975`** of `1,978` certified configurations report complete inertia weight and combined tailpipe greenhouse-gas emissions (`3` hydrogen fuel-cell configurations lacking standard GHG values are excluded). Measuring tailpipe **grams of $\text{CO}_2$ per mile** puts gasoline, diesel, hybrid, and zero-emission electric vehicles on the exact same physical scale.
+## Vehicle Weight and Tailpipe Carbon Today
 
 ::: {.plot-container}
 ```{r}
 #| label: fig-epa24-weight-co2
-#| fig-height: 5.8
 
 epa24_plot <- epa24_df |>
   filter(!is.na(co2_gpm), !is.na(inertia_weight_lbs)) |>
   mutate(
     fuel_group = case_when(
-      str_detect(fuel_type, regex("Electricity", ignore_case = TRUE)) & co2_gpm == 0 ~ "Battery Electric (0 g/mi)",
+      str_detect(fuel_type, regex("Electricity", ignore_case = TRUE)) & co2_gpm == 0 ~ "Battery Electric",
       str_detect(fuel_type, regex("Electricity", ignore_case = TRUE)) ~ "Plug-In Hybrid",
       str_detect(fuel_type, regex("Diesel", ignore_case = TRUE)) ~ "Diesel",
-      TRUE ~ "Gasoline / Conventional Hybrid"
+      TRUE ~ "Gasoline / Hybrid"
     ),
     hover_text = paste0(
       "<b>2024 ", make, " ", model, "</b><br>",
-      "Manufacturer Group: ", manufacturer_group, "<br>",
       "Class: ", vehicle_class, "<br>",
-      "Inertia Weight: ", comma(inertia_weight_lbs), " lbs<br>",
-      "Tailpipe CO2: ", round(co2_gpm, 0), " g/mi<br>",
-      "Label Combined Rating: ", mpg_combined,
-      if_else(co2_gpm == 0, " MPGe", " MPG")
+      "Weight: ", comma(inertia_weight_lbs), " lbs<br>",
+      "Tailpipe CO2: ", round(co2_gpm, 0), " g/mi"
     )
   )
 
@@ -197,30 +185,31 @@ p_co2 <- ggplot(
   scale_y_continuous(labels = label_number(suffix = " g/mi")) +
   scale_color_manual(
     values = c(
-      "Battery Electric (0 g/mi)" = "#1b9e77",
-      "Plug-In Hybrid" = "#7570b3",
-      "Gasoline / Conventional Hybrid" = "#d95f02",
-      "Diesel" = "#666666"
+      "Battery Electric" = "#d90429",
+      "Plug-In Hybrid" = "#ff758f",
+      "Gasoline / Hybrid" = "#111111",
+      "Diesel" = "#7a7a7a"
     )
   ) +
   labs(
     title = paste0(
-      "Vehicle Inertia Weight vs. Tailpipe CO2 Emissions (N = ",
-      comma(n_epa24_valid), " EPA Certified Models, MY 2024)"
+      "Vehicle Weight vs. Tailpipe Carbon Emissions (N = ",
+      comma(n_epa24_valid), " Certified MY 2024 Models)"
     ),
-    x = "EPA Base Level Inertia Weight (lbs)",
-    y = "Combined Tailpipe CO2 Emissions (grams / mile)",
-    color = "Fuel Category"
+    x = "Vehicle Test Weight",
+    y = "Tailpipe Carbon Emissions (grams / mile)",
+    color = "Powertrain"
   ) +
   theme_minimal(base_size = 12)
 
-ggplotly(p_co2, tooltip = "text") |>
+ggplotly(p_co2, tooltip = "text", height = 450) |>
   layout(
-    legend = list(orientation = "h", y = -0.16),
-    margin = list(b = 85)
-  )
+    autosize = TRUE,
+    legend = list(orientation = "h", x = 0, y = -0.18),
+    margin = list(t = 45, r = 20, b = 75, l = 65)
+  ) |>
+  config(responsive = TRUE)
 ```
 :::
 
-**Patterns & Findings:**
-Among **Gasoline / Conventional Hybrid** and **Diesel** vehicles, heavier curb weight translates steeply into higher tailpipe carbon output—climbing from roughly `120–180 g/mi` for `3,000–3,500 lb` compact hybrids up to `350–550+ g/mi` for `5,500–6,500 lb` full-size trucks and performance SUVs. Meanwhile, **Battery-Electric** models form a flat **`0 g/mi`** tailpipe floor stretching all the way to `7,000–8,500 lb` electric pickups and SUVs (such as Rivian and GM trucks), explaining how manufacturers with high EV shares—like **Rivian (`0 g/mi`)**, **Volvo (`133 g/mi`)**, **Kia (`135 g/mi`)**, and **Hyundai (`147 g/mi`)**—achieve dramatically lower fleet-average $\text{CO}_2$ than truck-heavy combustion lineups.
+Among recent gasoline and diesel vehicles, extra weight carries a clear environmental cost: heavier trucks and large SUVs burn more fuel per mile and release far more tailpipe carbon than compact cars and hybrids. Battery-electric models break that weight penalty at the tailpipe—forming a flat zero-emission line across the bottom of the chart from compact hatchbacks all the way up to heavy electric pickups.

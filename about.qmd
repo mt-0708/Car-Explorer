@@ -1,10 +1,11 @@
 ---
 title: "About This Project"
-subtitle: "Author information, reproducible data pipeline, and dataset & image citations"
+subtitle: "Author information and dataset & image citations"
 ---
 
 ```{r}
 #| label: setup
+#| include: false
 library(tidyverse)
 library(knitr)
 library(scales)
@@ -21,14 +22,6 @@ img_df <- read_csv("data/processed/vehicle_images.csv", show_col_types = FALSE)
 ## Project Summary
 
 **What Makes a Car Worth Its Price?** investigates how vehicle sticker price (MSRP), engine horsepower, fuel economy, electric driving range, and manufacturer positioning relate to one another—combining verified MSRP benchmarks with recent **2022–2027** vehicle specifications and **50 years (1975–2025)** of U.S. EPA fleet trends.
-
-### Reproducible R & Quarto Pipeline
-
-All data downloading, cleaning, deduplication, and visualization steps are scripted in R using the `tidyverse`, `ggplot2`, `plotly`, and `DT`:
-
-1. **Download raw sources (`data/raw/`):** `scripts/download_epa.R`, `scripts/download_msrp.R`, `scripts/download_trimslate.R`, and `scripts/download_images.R`.
-2. **Clean individual tables (`data/processed/`):** `scripts/clean_datasets.R` standardizes column names, converts string placeholders (`"N/A"`, `"UNKNOWN"`, `"-"`) to `NA`, and preserves untouched raw files.
-3. **Connect without duplication:** `scripts/merge_datasets.R` summarizes lookup tables to one row per `(year, make, model)` prior to `left_join(..., relationship = "many-to-one")` so zero observations are duplicated.
 
 ```{r}
 #| label: tbl-dataset-summary

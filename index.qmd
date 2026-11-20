@@ -1,9 +1,14 @@
 ---
+title: "What Makes a Car Worth Its Price?"
+subtitle: "Comparing horsepower, sticker price, fuel economy, and 50 years of U.S. automotive trends"
 pagetitle: "Car Explorer"
+page-layout: full
+toc: false
 ---
 
 ```{r}
 #| label: setup
+#| include: false
 library(tidyverse)
 library(plotly)
 library(scales)
@@ -20,7 +25,6 @@ n_years_epa <- n_distinct(trends_df$year)
 ::: {.plot-container}
 ```{r}
 #| label: fig-hp-msrp
-#| fig-height: 6
 
 # Prepare hover text for interactive exploration
 plot_df <- msrp_df |>
@@ -67,15 +71,74 @@ p_home <- ggplot(
   ) +
   theme_minimal(base_size = 13)
 
-ggplotly(p_home, tooltip = "text") |>
+ggplotly(p_home, tooltip = "text", height = 460) |>
   layout(
-    legend = list(orientation = "h", y = -0.18),
-    margin = list(b = 90)
-  )
+    autosize = TRUE,
+    legend = list(orientation = "h", x = 0, y = -0.18),
+    margin = list(t = 45, r = 20, b = 75, l = 70)
+  ) |>
+  config(responsive = TRUE)
 ```
 :::
 
 This chart compares engine horsepower with vehicle MSRP across body styles. Higher-horsepower vehicles generally cost more, while the log scale makes everyday cars easier to compare with high-performance vehicles.
+
+## Explore the Full Website
+
+::: {.stat-grid}
+::: {.stat-card .vehicle-card}
+<svg class="vehicle-outline" viewBox="0 0 320 120" aria-hidden="true">
+  <path class="vehicle-body" d="M22 79h18l18-30q5-8 15-10l48-7 32-21q7-5 17-5h42q11 0 18 8l26 28 31 9q13 4 17 17l3 11h-19a22 22 0 0 0-44 0H98a22 22 0 0 0-44 0H22z"/>
+  <path class="vehicle-detail" d="m81 41 47-6 28-19h32v29H69m127-29 34 3 23 26h-57"/>
+  <circle class="vehicle-wheel" cx="76" cy="79" r="15"/>
+  <circle class="vehicle-wheel" cx="268" cy="79" r="15"/>
+  <circle class="vehicle-hub" cx="76" cy="79" r="5"/>
+  <circle class="vehicle-hub" cx="268" cy="79" r="5"/>
+</svg>
+### [Car Explorer](explorer.qmd)
+Search and filter **2022–2027** vehicles by make, model, and body style with specifications and CarAPI photographs.
+:::
+
+::: {.stat-card .vehicle-card}
+<svg class="vehicle-outline" viewBox="0 0 320 120" aria-hidden="true">
+  <path class="vehicle-body" d="M18 80h20l17-28q5-8 16-10l39-5 30-22q7-5 18-5h58q12 0 20 9l24 28 34 8q12 3 17 15l4 10h-20a22 22 0 0 0-44 0H95a22 22 0 0 0-44 0H18z"/>
+  <path class="vehicle-detail" d="m68 44 43-5 28-20h35v25H56m118-25h20q10 0 17 8l16 17h-53"/>
+  <circle class="vehicle-wheel" cx="73" cy="80" r="15"/>
+  <circle class="vehicle-wheel" cx="273" cy="80" r="15"/>
+  <circle class="vehicle-hub" cx="73" cy="80" r="5"/>
+  <circle class="vehicle-hub" cx="273" cy="80" r="5"/>
+</svg>
+### [Price & Performance](performance.qmd)
+Compare manufacturer pricing tiers, horsepower-per-dollar value, and recent **2022–2027** horsepower benchmarks.
+:::
+
+::: {.stat-card .vehicle-card}
+<svg class="vehicle-outline" viewBox="0 0 320 120" aria-hidden="true">
+  <path class="vehicle-body" d="M20 82h18l14-25q5-9 16-11l29-5 18-22q7-8 19-8h77q12 0 20 10l17 21 32 6q14 3 19 17l5 17h-20a22 22 0 0 0-44 0H94a22 22 0 0 0-44 0H20z"/>
+  <path class="vehicle-detail" d="m63 49 34-5 18-21q6-7 16-7h27v34H56m110-34h26q10 0 17 9l13 17h-56"/>
+  <circle class="vehicle-wheel" cx="72" cy="82" r="15"/>
+  <circle class="vehicle-wheel" cx="269" cy="82" r="15"/>
+  <circle class="vehicle-hub" cx="72" cy="82" r="5"/>
+  <circle class="vehicle-hub" cx="269" cy="82" r="5"/>
+</svg>
+### [Fuel Economy](fuel.qmd)
+Compare **2022–2027** city MPG, highway MPG, and electric vehicle driving range across powertrains.
+:::
+
+::: {.stat-card .vehicle-card}
+<svg class="vehicle-outline" viewBox="0 0 320 120" aria-hidden="true">
+  <path class="vehicle-body" d="M18 80h17l14-26q4-8 14-10l20-4V21q0-9 10-9h91q10 0 16 8l20 25 37 2q17 1 25 15l10 18h-21a22 22 0 0 0-44 0H91a22 22 0 0 0-44 0H18z"/>
+  <path class="vehicle-detail" d="M89 40V20q0-4 5-4h39v29H77m66-29h33q7 0 12 7l15 22h-48"/>
+  <path class="vehicle-detail" d="M231 49h32q13 0 19 12l4 7h-48"/>
+  <circle class="vehicle-wheel" cx="69" cy="80" r="15"/>
+  <circle class="vehicle-wheel" cx="269" cy="80" r="15"/>
+  <circle class="vehicle-hub" cx="69" cy="80" r="5"/>
+  <circle class="vehicle-hub" cx="269" cy="80" r="5"/>
+</svg>
+### [Automotive Trends](trends.qmd)
+Explore 50 years of EPA trends (**1975–2025**) in MPG, horsepower, weight, and MY 2024 manufacturer fleets.
+:::
+:::
 
 ::: {.stat-grid}
 ::: {.stat-card}
@@ -86,29 +149,5 @@ Deduplicated new-vehicle MSRP & horsepower records (`msrp_merged.csv`, MY 2001�
 ::: {.stat-card}
 ### `r n_years_epa` Model Years
 Historical EPA fleet trends (**1975–2025**) tracking MPG, horsepower, and vehicle weight.
-:::
-:::
-
-## Explore the Full Website
-
-::: {.stat-grid}
-::: {.stat-card}
-### [Car Explorer](explorer.qmd)
-Search and filter **2022–2027** vehicles by make, model, and body style with specifications and CarAPI photographs.
-:::
-
-::: {.stat-card}
-### [Price & Performance](performance.qmd)
-Compare manufacturer pricing tiers, horsepower-per-dollar value, and recent **2022–2027** horsepower benchmarks.
-:::
-
-::: {.stat-card}
-### [Fuel Economy](fuel.qmd)
-Compare **2022–2027** city MPG, highway MPG, and electric vehicle driving range across powertrains.
-:::
-
-::: {.stat-card}
-### [Automotive Trends](trends.qmd)
-Explore 50 years of EPA trends (**1975–2025**) in MPG, horsepower, weight, and MY 2024 manufacturer fleets.
 :::
 :::
